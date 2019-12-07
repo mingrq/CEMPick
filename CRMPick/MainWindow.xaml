@@ -5,8 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRMPick"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <WebBrowser x:Name="webBrower" Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"/>
-    </Grid>
+        Title="工具菜单" Height="450" Width="800" Background="#FDEECB" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+    <ScrollViewer VerticalScrollBarVisibility="Hidden">
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Foreground" Value="#333333"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" Value="#181CD4"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="Border">
+                    <Setter Property="Margin" Value="20,20,0,60"/>
+                    <Setter Property="CornerRadius" Value="4"/>
+                    <Setter Property="Width" Value="100"/>
+                    <Setter Property="Height" Value="30"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                    <Setter Property="Background" Value="#80B407"/>
+                </Style>
+            </Grid.Resources>
+            <StackPanel  Orientation="Vertical">
+                <Border >
+                    <Label Content="进入CRM"/>
+                </Border>
+                <Border >
+                    <Label Content="批量查询"/>
+                </Border>
+                <Border >
+                    <Label Content="批量挑入"/>
+                </Border>
+                <Border MouseLeftButtonDown="UserControlOnClick">
+                    <Label Content="用户管理"/>
+                </Border>
+
+                <!--<WebBrowser x:Name="webBrower" Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"/>-->
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
 </Window>

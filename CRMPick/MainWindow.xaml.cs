@@ -24,5 +24,16 @@ namespace CRMPick
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// 用户管理窗口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserControlOnClick(object sender, MouseButtonEventArgs e)
+        {
+            UserControlWindow userControlWindow = new UserControlWindow();
+            userControlWindow.Show();
+        }
     }
 }
