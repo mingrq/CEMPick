@@ -35,5 +35,13 @@ namespace CRMPick
             UserControlWindow userControlWindow = new UserControlWindow();
             userControlWindow.Show();
         }
+
+
+        private void CRMOnClick(object sender, MouseButtonEventArgs e)
+        {
+            ALCRMWindow aLCRMWindow = new ALCRMWindow();
+           
+            aLCRMWindow.Show();
+        }
     }
 }

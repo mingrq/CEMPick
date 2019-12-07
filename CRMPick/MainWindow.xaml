@@ -29,7 +29,7 @@
                 </Style>
             </Grid.Resources>
             <StackPanel  Orientation="Vertical">
-                <Border >
+                <Border MouseLeftButtonDown="CRMOnClick">
                     <Label Content="进入CRM"/>
                 </Border>
                 <Border >
