@@ -4,66 +4,34 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System;
+using mshtml;
+using System.Windows;
+using static CRMPick.Utils.IeVersionClass;
+using System.Windows.Controls;
+using System.Threading;
+using System.Windows.Media.Imaging;
+using System.Net;
+using System.Management;
 
 namespace CRMPick.Utils
 {
     class CacheImage
     {
-        [DllImport("Wininet.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern Boolean GetUrlCacheEntryInfo(String lpxaUrlName, IntPtr lpCacheEntryInfo, ref int lpdwCacheEntryInfoBufferSize);
-        const int ERROR_FILE_NOT_FOUND = 0x2;
-        struct LPINTERNET_CACHE_ENTRY_INFO
+       public void GetCacheImage(WebBrowser webBrower, dynamic elem)
         {
-            public int dwStructSize;
-            IntPtr lpszSourceUrlName;
-            public IntPtr lpszLocalFileName;
-            // int CacheEntryType;
-            // int dwUseCount;
-            // int dwHitRate;
-            //int dwSizeLow;
-            // int dwSizeHigh;
+            HTMLDocument doc = (HTMLDocument)webBrower.Document;
+            HTMLBody body = (HTMLBody)doc.body;
 
-            //System.Runtime.InteropServices.ComTypes.FILETIME LastModifiedTime;
-            //System.Runtime.InteropServices.ComTypes.FILETIME Expiretime;
-            // System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
-            //System.Runtime.InteropServices.ComTypes.FILETIME LastSyncTime;
-            //IntPtr lpHeaderInfo;
-            //readonly int dwheaderInfoSize;
-            //IntPtr lpszFileExtension;
-            //int dwEemptDelta;
-        }
-        // 返回 指定URL文件的缓存在本地文件系统中的路径
-        public string GetPathForCachedFile(string fileUrl)
-        {
-            int cacheEntryInfoBufferSize = 0;
-            IntPtr cacheEntryInfoBuffer = IntPtr.Zero;
-            int lastError; Boolean result;
-            try
-            {
-                result = GetUrlCacheEntryInfo(fileUrl, IntPtr.Zero, ref cacheEntryInfoBufferSize);
-                lastError = Marshal.GetLastWin32Error();
-                if (result == false)
-                {
-                    if (lastError == ERROR_FILE_NOT_FOUND)
-                        return null;
-                }
-                cacheEntryInfoBuffer = Marshal.AllocHGlobal(cacheEntryInfoBufferSize);
-                result = GetUrlCacheEntryInfo(fileUrl, cacheEntryInfoBuffer, ref cacheEntryInfoBufferSize);
-                lastError = Marshal.GetLastWin32Error();
-                if (result == true)
-                {
-                    Object strObj = Marshal.PtrToStructure(cacheEntryInfoBuffer, typeof(LPINTERNET_CACHE_ENTRY_INFO));
-                    LPINTERNET_CACHE_ENTRY_INFO internetCacheEntry = (LPINTERNET_CACHE_ENTRY_INFO)strObj;
-                    String localFileName = Marshal.PtrToStringAuto(internetCacheEntry.lpszLocalFileName); return localFileName;
-                }
-                else
-                    return null;// file not found
-            }
-            finally
-            {
-                if (!cacheEntryInfoBuffer.Equals(IntPtr.Zero))
-                    Marshal.FreeHGlobal(cacheEntryInfoBuffer);
-            }
+            IHTMLControlRange rang = (IHTMLControlRange)body.createControlRange();
+            IHTMLControlElement img = (IHTMLControlElement)(elem);
+            rang.add(img);
+            rang.execCommand("Copy", true, null);
+            BitmapSource bitmap = Clipboard.GetImage();
+            Image regImg = new Image();
+            regImg.Source = bitmap;
+            Clipboard.Clear();
         }
     }
 }

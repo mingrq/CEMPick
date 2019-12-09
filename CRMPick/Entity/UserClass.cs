@@ -12,8 +12,8 @@ namespace CRMPick.Entity
         public string username { set; get; }
         public string userpw { set; get; }
         public string facility { set; get; }
+        public string facilitytwo { set; get; }
         public string limited { set; get; }
-        public string token { set; get; }
         public int logincount { set; get; }
     }
 }

@@ -40,9 +40,9 @@ namespace CRMPick.Utils
         /// <returns></returns>
         public UserClass getUser(string username)
         {
-            UserClass user=null;
+            UserClass user = null;
             MySqlConnection conn = MySql();
-            string sql = "select * from crm_user where username=\'"+ username+"\'";
+            string sql = "select * from crm_user where username=\'" + username + "\'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -51,8 +51,8 @@ namespace CRMPick.Utils
                 user.username = reader.GetString("username");
                 user.userpw = reader.GetString("userpw");
                 user.facility = reader.GetString("facility");
+                user.facilitytwo = reader.GetString("facilitytwo");
                 user.limited = reader.GetString("limited");
-                user.token = reader.GetString("token");
             }
             conn.Close();
             return user;
@@ -66,11 +66,11 @@ namespace CRMPick.Utils
         public bool addUser(UserClass user)
         {
             MySqlConnection conn = MySql();
-            string sql = "INSERT INTO crm_user(`username`, `userpw`,  `limited`, `team`) VALUES ('"+user.username+"', '"+user.userpw+"', '"+user.limited+"',  '"+user.team+"')";
+            string sql = "INSERT INTO crm_user(`username`, `userpw`,  `limited`, `team`) VALUES ('" + user.username + "', '" + user.userpw + "', '" + user.limited + "',  '" + user.team + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int tian = cmd.ExecuteNonQuery();
             conn.Close();
-            if (tian>0)
+            if (tian > 0)
             {
                 return true;
             }
@@ -97,11 +97,11 @@ namespace CRMPick.Utils
                 UserClass user = new UserClass();
                 user.team = reader.GetString("team");
                 user.username = reader.GetString("username");
-                user.logincount = reader.GetInt16("logincount");
                 user.userpw = reader.GetString("userpw");
                 user.facility = reader.GetString("facility");
+                user.facilitytwo = reader.GetString("facilitytwo");
                 user.limited = reader.GetString("limited");
-                user.token = reader.GetString("token");
+                user.logincount = reader.GetInt16("logincount");
                 users.Add(user);
             }
             return users;

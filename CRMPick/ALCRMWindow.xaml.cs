@@ -1,18 +1,13 @@
 ﻿using CRMPick.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using mshtml;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using static CRMPick.Utils.IeVersionClass;
+using System.Windows.Controls;
+using System.Threading;
+using System.Windows.Media.Imaging;
+using System.Net;
+using System.Management;
 
 namespace CRMPick
 {
@@ -21,11 +16,13 @@ namespace CRMPick
     /// </summary>
     public partial class ALCRMWindow : Window
     {
+
         public ALCRMWindow()
         {
             InitializeComponent();
             IeVersionClass ieVersion = new IeVersionClass();
             ieVersion.SetIEVer(IeVersion.标准ie11);
+            webBrower.Source = new Uri("https://pin.aliyun.com/get_img?identity=caenir.alibaba-inc.com&sessionid=k0Ig5XK02mr2iNsIMcdjs5gUDnfigit+IDUY+GT/Bn32Q=");
             this.ContentRendered += MLoad;
         }
 
@@ -51,5 +48,20 @@ namespace CRMPick
             
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            HTMLDocument doc = (HTMLDocument)webBrower.Document;
+            HTMLBody body = (HTMLBody)doc.body;
+            IHTMLControlRange rang = (IHTMLControlRange)body.createControlRange();
+            IHTMLControlElement img = (IHTMLControlElement)(body.children[0]);
+            rang.add(img);
+            rang.execCommand("Copy", true, null);
+            BitmapSource bitmap = Clipboard.GetImage();
+            Image regImg = new Image();
+            regImg.Source = bitmap;
+            Clipboard.Clear();
+         
+        }
+           
     }
 }

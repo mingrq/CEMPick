@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.HtmlControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -54,13 +55,13 @@ namespace CRMPick
 
         private void BatchChaxunOnClick(object sender, MouseButtonEventArgs e)
         {
-            Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.InternetCache));
-            CacheImage i = new CacheImage();
-            //在网页上找到百度logo图片的url写在下面
-            string b = i.GetPathForCachedFile("get_img?identity=caenir.alibaba-inc.com&sessionid=k0Ig5XK02mr2iNsIMcdjs5gdn6kU7h1Ua+6vxiE8HU3so=&timestamp=407");
-            Console.WriteLine(b);
-            
-            
+            BatchChaxunWindow batchChaxunWindow = new BatchChaxunWindow();
+            batchChaxunWindow.Show();
+
+
         }
+
+
+        
     }
 }

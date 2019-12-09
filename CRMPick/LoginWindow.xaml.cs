@@ -37,9 +37,10 @@ namespace CRMPick
             MysqlUtil mySqlUtil = new MysqlUtil();
             UserClass user = mySqlUtil.getUser(username.Text);
             if (user != null)
-            {
+            {   
                 if (userpw.Text.Equals(user.userpw))
                 {
+                  
                     MainWindow mainWindow = new MainWindow();
                     mainWindow.Show();
                     this.Close();
