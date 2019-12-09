@@ -64,15 +64,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddUserWindow.xaml.cs">
+      <DependentUpon>AddUserWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ALCRMWindow.xaml.cs">
       <DependentUpon>ALCRMWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BatchTiaoRuWindow.xaml.cs">
+      <DependentUpon>BatchTiaoRuWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Entity\UserClass.cs" />
     <Compile Include="UserControlWindow.xaml.cs">
       <DependentUpon>UserControlWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\CacheImage.cs" />
+    <Compile Include="Utils\IeVersionClass.cs" />
     <Compile Include="Utils\MysqlUtil.cs" />
+    <Page Include="AddUserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ALCRMWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BatchTiaoRuWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

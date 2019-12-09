@@ -4,7 +4,46 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="用户管理" Height="450" Width="800" >
+        Title="用户管理" Height="450" Width="800" ContentRendered="WinLoaded">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <Style TargetType="Label">
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="#333333"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="#181CD4"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="Border">
+                <Setter Property="Margin" Value="20,20,20,0"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Width" Value="100"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="Background" Value="#80B407"/>
+            </Style>
+        </Grid.Resources>
+        <Border MouseLeftButtonDown="AddUser">
+            <Label Content="添加用户"/>
+        </Border>
+        <ListView x:Name="list" Grid.Row="1" Margin="20">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="团队" DisplayMemberBinding="{Binding Path=team}"/>
+                    <GridViewColumn Header="用户名" DisplayMemberBinding="{Binding Path=username}"/>
+                    <GridViewColumn Header="登录次数" Width="100" DisplayMemberBinding="{Binding Path=logincount}"/>
+                    <GridViewColumn Header="操作">
+                        
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

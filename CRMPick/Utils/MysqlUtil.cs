@@ -51,11 +51,60 @@ namespace CRMPick.Utils
                 user.username = reader.GetString("username");
                 user.userpw = reader.GetString("userpw");
                 user.facility = reader.GetString("facility");
-                user.limited = reader.GetInt16("limited");
+                user.limited = reader.GetString("limited");
                 user.token = reader.GetString("token");
             }
             conn.Close();
             return user;
+        }
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public bool addUser(UserClass user)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "INSERT INTO crm_user(`username`, `userpw`,  `limited`, `team`) VALUES ('"+user.username+"', '"+user.userpw+"', '"+user.limited+"',  '"+user.team+"')";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int tian = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (tian>0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// 获取所有用户信息
+        /// </summary>
+        /// <returns></returns>
+        public List<UserClass> getUserList()
+        {
+            List<UserClass> users = new List<UserClass>();
+            MySqlConnection conn = MySql();
+            string sql = "select * from crm_user";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                UserClass user = new UserClass();
+                user.team = reader.GetString("team");
+                user.username = reader.GetString("username");
+                user.logincount = reader.GetInt16("logincount");
+                user.userpw = reader.GetString("userpw");
+                user.facility = reader.GetString("facility");
+                user.limited = reader.GetString("limited");
+                user.token = reader.GetString("token");
+                users.Add(user);
+            }
+            return users;
         }
     }
 }

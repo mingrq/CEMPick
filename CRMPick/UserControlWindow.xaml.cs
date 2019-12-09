@@ -1,5 +1,8 @@
-﻿using System;
+﻿using CRMPick.Entity;
+using CRMPick.Utils;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,5 +26,26 @@ namespace CRMPick
         {
             InitializeComponent();
         }
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddUser(object sender, MouseButtonEventArgs e)
+        {
+            AddUserWindow addUserWindow = new AddUserWindow();
+            addUserWindow.ShowDialog();
+        }
+
+        
+        private void WinLoaded(object sender, EventArgs e)
+        {
+            MysqlUtil mysqlUtil = new MysqlUtil();
+            List<UserClass> users = mysqlUtil.getUserList();
+            list.ItemsSource = users;            
+        }
     }
+
+
 }
