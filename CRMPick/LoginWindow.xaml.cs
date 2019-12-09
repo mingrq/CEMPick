@@ -40,10 +40,37 @@ namespace CRMPick
             {   
                 if (userpw.Text.Equals(user.userpw))
                 {
-                  
-                    MainWindow mainWindow = new MainWindow();
-                    mainWindow.Show();
-                    this.Close();
+                    string uuid = UUIDClass.GetUUID();
+                    if (!user.facility.Equals(""))
+                    {
+                        //两个UUID都有值
+                        if (user.facility.Equals(uuid))
+                                                {
+                            MainWindow mainWindow = new MainWindow();
+                            mainWindow.Show();
+                            this.Close();
+                        }
+                    }else if (!user.facilitytwo.Equals(""))
+                    {
+
+                    }
+                    else
+                    {
+                        MysqlUtil mysqlUtil = new MysqlUtil();
+                        //有一个或两个UUID为空字符,将此设备的uuid保存到数据库中
+                        if (user.facility.Equals(""))
+                        {
+                            mysqlUtil.updateUUID(uuid, "facility", user.username);
+                        }
+                        else if (user.facilitytwo.Equals(""))
+                        {
+                            mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
+                        }
+                        MainWindow mainWindow = new MainWindow();
+                        mainWindow.Show();
+                        this.Close();
+                    }
+                    
                 }
                 else
                 {

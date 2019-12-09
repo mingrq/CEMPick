@@ -80,6 +80,28 @@ namespace CRMPick.Utils
             }
         }
 
+        /// <summary>
+        /// 修改uuid
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public bool updateUUID(string uuid, string facility, string username)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "UPDATE crm_user SET `" + facility + "` = '" + uuid + "' WHERE `username` = '" + username + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int update = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (update > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// 获取所有用户信息
