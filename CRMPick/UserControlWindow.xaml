@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="用户管理" Height="450" Width="800" ContentRendered="WinLoaded">
+        Title="用户管理" Height="450" Width="800" ContentRendered="WinLoaded" WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -34,13 +34,28 @@
             <Label Content="添加用户"/>
         </Border>
         <ListView x:Name="list" Grid.Row="1" Margin="20">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="Black"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="团队" DisplayMemberBinding="{Binding Path=team}"/>
-                    <GridViewColumn Header="用户名" DisplayMemberBinding="{Binding Path=username}"/>
-                    <GridViewColumn Header="登录次数" Width="100" DisplayMemberBinding="{Binding Path=logincount}"/>
-                    <GridViewColumn Header="操作">
-                        
+                    <GridViewColumn Width="200" Header="团队" DisplayMemberBinding="{Binding Path=team}"/>
+                    <GridViewColumn Width="180"  Header="用户名" DisplayMemberBinding="{Binding Path=username}"/>
+                    <GridViewColumn Width="320" Header="设备编号-1" DisplayMemberBinding="{Binding Path=facility}"/>
+                    <GridViewColumn Width="320" Header="设备编号-2" DisplayMemberBinding="{Binding Path=facilitytwo}"/>
+                    <GridViewColumn Header="登录次数" Width="140" DisplayMemberBinding="{Binding Path=logincount}"/>
+                    <GridViewColumn Width="300" Header="操作">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="修改" Click="UpdateUser" Margin="5" />
+                                    <Button Content="删除" Click="DeleteUser" Margin="5"/>
+                                    <Button Content="清空设备" Click="DeleteFac" Margin="5"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </GridView>
             </ListView.View>

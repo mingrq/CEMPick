@@ -128,5 +128,49 @@ namespace CRMPick.Utils
             }
             return users;
         }
+
+        /// <summary>
+        /// 清空设备
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public bool deleteFac(string username)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "UPDATE crm_user SET `facility` = '', `facilitytwo` = '' WHERE `username` = '"+username+"'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int update = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (update > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public bool deleteUser(string username)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "DELETE FROM crm_user WHERE `username` = '"+username+"'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int update = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (update > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

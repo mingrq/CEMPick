@@ -22,6 +22,7 @@ namespace CRMPick
     /// </summary>
     public partial class UserControlWindow : Window
     {
+        
         public UserControlWindow()
         {
             InitializeComponent();
@@ -38,14 +39,71 @@ namespace CRMPick
             addUserWindow.ShowDialog();
         }
 
-        
+
         private void WinLoaded(object sender, EventArgs e)
         {
             MysqlUtil mysqlUtil = new MysqlUtil();
             List<UserClass> users = mysqlUtil.getUserList();
-            list.ItemsSource = users;            
+            list.ItemsSource = users;
+        }
+
+        /// <summary>
+        /// 修改用户信息
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateUser(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteUser(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            var userclass = btn.DataContext as UserClass;
+            MysqlUtil mysqlUtil = new MysqlUtil();
+            if (mysqlUtil.deleteFac(userclass.username))
+            {
+                List<UserClass> users = (List<UserClass>)list.ItemsSource;
+                users.Remove(userclass);
+                list.ItemsSource = null;
+                list.ItemsSource = users;
+            }
+            else
+            {
+                MessageBox.Show("删除失败");
+            }
+        }
+
+        /// <summary>
+        /// 清空登录设备
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteFac(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            var userclass = btn.DataContext as UserClass;
+            MysqlUtil mysqlUtil = new MysqlUtil();
+            if (mysqlUtil.deleteFac(userclass.username))
+            {
+                List<UserClass> users = (List<UserClass>)list.ItemsSource;
+                int i= users.IndexOf(userclass);
+                UserClass user = list.Items[i] as UserClass;
+                users[i].facilitytwo = "";
+                users[i].facility = "";
+                list.ItemsSource = null;
+                list.ItemsSource = users;
+            }
+            else
+            {
+                MessageBox.Show("清空失败");
+            }
         }
     }
-
-
 }

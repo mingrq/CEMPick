@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CRMPick.Entity
 {
-    class UserClass
+    class UserClass: INotifyPropertyChanged
     {
         public string team { set; get; }
         public string username { set; get; }
@@ -15,5 +16,7 @@ namespace CRMPick.Entity
         public string facilitytwo { set; get; }
         public string limited { set; get; }
         public int logincount { set; get; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
