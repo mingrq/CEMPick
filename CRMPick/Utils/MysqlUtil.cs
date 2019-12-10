@@ -81,6 +81,29 @@ namespace CRMPick.Utils
         }
 
         /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public bool updateUser(UserClass user)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "UPDATE crm_user SET `team` = '"+user.team+"', `userpw` = '"+user.userpw+"', `limited` = '"+user.limited+"' WHERE `username` = '"+user.username+"'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int tian = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (tian > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        /// <summary>
         /// 修改uuid
         /// </summary>
         /// <param name="user"></param>

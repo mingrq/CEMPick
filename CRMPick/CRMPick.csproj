@@ -82,6 +82,9 @@
       <DependentUpon>BatchTiaoRuWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Entity\UserClass.cs" />
+    <Compile Include="UpdateUserWindow.xaml.cs">
+      <DependentUpon>UpdateUserWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControlWindow.xaml.cs">
       <DependentUpon>UserControlWindow.xaml</DependentUpon>
     </Compile>
@@ -124,6 +127,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UpdateUserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControlWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -54,7 +54,12 @@ namespace CRMPick
         /// <param name="e"></param>
         private void UpdateUser(object sender, RoutedEventArgs e)
         {
-
+            var btn = sender as Button;
+            var userclass = btn.DataContext as UserClass;
+            UpdateUserWindow updateUserWindow = new UpdateUserWindow();
+            updateUserWindow.SetUserEntity(userclass);
+            updateUserWindow.Owner = this;
+            updateUserWindow.Show();
         }
 
         /// <summary>
@@ -94,7 +99,6 @@ namespace CRMPick
             {
                 List<UserClass> users = (List<UserClass>)list.ItemsSource;
                 int i= users.IndexOf(userclass);
-                UserClass user = list.Items[i] as UserClass;
                 users[i].facilitytwo = "";
                 users[i].facility = "";
                 list.ItemsSource = null;

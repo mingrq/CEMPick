@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CRMPick.Entity
 {
-    class UserClass: INotifyPropertyChanged
+    public class UserClass
     {
         public string team { set; get; }
         public string username { set; get; }

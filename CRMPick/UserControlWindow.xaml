@@ -36,7 +36,7 @@
         <ListView x:Name="list" Grid.Row="1" Margin="20">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="Background" Value="Black"/>
+                    <Setter Property="Background" Value="#FDEECB"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>
