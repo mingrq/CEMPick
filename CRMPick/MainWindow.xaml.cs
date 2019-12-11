@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static CRMPick.Utils.IeVersionClass;
 
 namespace CRMPick
 {
@@ -26,6 +27,8 @@ namespace CRMPick
         public MainWindow()
         {
             InitializeComponent();
+            IeVersionClass ieVersion = new IeVersionClass();
+            ieVersion.SetIEVer(IeVersion.标准ie9);
         }
 
         /// <summary>
@@ -36,6 +39,7 @@ namespace CRMPick
         private void UserControlOnClick(object sender, MouseButtonEventArgs e)
         {
             UserControlWindow userControlWindow = new UserControlWindow();
+            userControlWindow.Topmost = true;
             userControlWindow.Show();
         }
 
@@ -43,25 +47,23 @@ namespace CRMPick
         private void CRMOnClick(object sender, MouseButtonEventArgs e)
         {
             ALCRMWindow aLCRMWindow = new ALCRMWindow();
-            aLCRMWindow.Show();
             aLCRMWindow.Topmost = true;
+            aLCRMWindow.Show();
+
         }
 
         private void BatchTiaoRuOnClick(object sender, MouseButtonEventArgs e)
         {
             BatchTiaoRuWindow batchTiaoRuWindow = new BatchTiaoRuWindow();
+            batchTiaoRuWindow.Topmost = true;
             batchTiaoRuWindow.Show();
         }
 
         private void BatchChaxunOnClick(object sender, MouseButtonEventArgs e)
         {
             BatchChaxunWindow batchChaxunWindow = new BatchChaxunWindow();
+            batchChaxunWindow.Topmost = true;
             batchChaxunWindow.Show();
-
-
         }
-
-
-        
     }
 }

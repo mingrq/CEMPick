@@ -30,6 +30,17 @@ namespace CRMPick.Utils
             Image regImg = new Image();
             regImg.Source = bitmap;
             Clipboard.Clear();
+
+            //HTMLDocument doc = (HTMLDocument)webBrower.Document;
+            //HTMLBody body = (HTMLBody)doc.body;
+            //IHTMLControlRange rang = (IHTMLControlRange)body.createControlRange();
+            //IHTMLControlElement img = (IHTMLControlElement)(body.children[0]);
+            //rang.add(img);
+            //rang.execCommand("Copy", true, null);
+            //BitmapSource bitmap = Clipboard.GetImage();
+            //Image regImg = new Image();
+            //regImg.Source = bitmap;
+            ////Clipboard.Clear();
         }
     }
 }

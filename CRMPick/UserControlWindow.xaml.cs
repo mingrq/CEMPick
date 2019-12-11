@@ -45,6 +45,7 @@ namespace CRMPick
             MysqlUtil mysqlUtil = new MysqlUtil();
             List<UserClass> users = mysqlUtil.getUserList();
             list.ItemsSource = users;
+            this.Topmost = false;
         }
 
         /// <summary>

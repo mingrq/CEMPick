@@ -89,6 +89,7 @@
       <DependentUpon>UserControlWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utils\CacheImage.cs" />
+    <Compile Include="Utils\Dc.cs" />
     <Compile Include="Utils\IeVersionClass.cs" />
     <Compile Include="Utils\MysqlUtil.cs" />
     <Compile Include="Utils\UUIDClass.cs" />
