@@ -17,19 +17,19 @@ namespace CRMPick.Utils
 {
     class CacheImage
     {
-       public void GetCacheImage(WebBrowser webBrower, dynamic elem)
+       public static void GetCacheImage(WebBrowser webBrower, string id)
         {
             HTMLDocument doc = (HTMLDocument)webBrower.Document;
             HTMLBody body = (HTMLBody)doc.body;
 
             IHTMLControlRange rang = (IHTMLControlRange)body.createControlRange();
-            IHTMLControlElement img = (IHTMLControlElement)(elem);
+            IHTMLControlElement img = (IHTMLControlElement)(doc.getElementById(id));
             rang.add(img);
             rang.execCommand("Copy", true, null);
-            BitmapSource bitmap = Clipboard.GetImage();
-            Image regImg = new Image();
-            regImg.Source = bitmap;
-            Clipboard.Clear();
+            //BitmapSource bitmap = Clipboard.GetImage();
+            //Image regImg = new Image();
+            //regImg.Source = bitmap;
+            //Clipboard.Clear();
 
             //HTMLDocument doc = (HTMLDocument)webBrower.Document;
             //HTMLBody body = (HTMLBody)doc.body;

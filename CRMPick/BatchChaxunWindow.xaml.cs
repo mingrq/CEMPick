@@ -1,4 +1,5 @@
-﻿using mshtml;
+﻿using CRMPick.Utils;
+using mshtml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,25 +152,33 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (CanOperation)
-            {
-                string tbresousess = tbresouses.Text.Trim();
-                if (tbresousess.Equals("")|| tbresousess.Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
-                {
-                    MessageBox.Show("没有资源了");
-                }
-                else
-                {
-                    reshUi(0);
-                    InquireCompany();
-                }
-            }
-            else
-            {
-                MessageBox.Show("页面不正确，无法进行操作");
-            }
+            
+            //if (CanOperation)
+            //{
+            //    string tbresousess = tbresouses.Text.Trim();
+            //    if (tbresousess.Equals("")|| tbresousess.Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
+            //    {
+            //        MessageBox.Show("没有资源了");
+            //    }
+            //    else
+            //    {
+            //        reshUi(0);
+            //        InquireCompany();
+            //    }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("页面不正确，无法进行操作");
+            //}
         }
 
+        /// <summary>
+        /// 获取验证码
+        /// </summary>
+        private void getimgcheckcode()
+        {
+            CacheImage.GetCacheImage(webBrower, "imgcheckcode");
+        }
 
         /// <summary>
         /// 调整ui
