@@ -21,6 +21,7 @@ namespace CRMPick
     /// </summary>
     public partial class AddUserWindow : Window
     {
+        private bool isusernamerepeat = false;
         public AddUserWindow()
         {
             InitializeComponent();
@@ -28,52 +29,75 @@ namespace CRMPick
 
         private void AddUser(object sender, MouseButtonEventArgs e)
         {
-            string teamname = team.Text;
-            string userna = username.Text;
-            string pw = userpw.Text;
-            string pwaga = userpwagain.Text;
-            if (teamname.Equals(""))
+            if (isusernamerepeat)
             {
-                MessageBox.Show("请输入使用团队");
-            }
-            else if (userna.Equals(""))
-            {
-                MessageBox.Show("请输入用户名");
-            }
-            else if (pw.Equals(""))
-            {
-                MessageBox.Show("请输入密码");
-            }
-            else if (pwaga.Equals(""))
-            {
-                MessageBox.Show("请再次输入密码");
-            }
-            else if (!pw.Equals(pwaga))
-            {
-                MessageBox.Show("两次输入的密码不一致");
+                MessageBox.Show("用户名已存在，请修改用户名!!");
             }
             else
             {
-                string limits = "1";
-                limits += pccb.IsChecked == true ? ",2" : "";
-                limits += ptcb.IsChecked == true ? ",3" : "";
-                limits += usercb.IsChecked == true ? ",4" : "";
-                UserClass user = new UserClass();
-                user.team = teamname;
-                user.username = userna;
-                user.userpw = pw;
-                user.limited = limits;
-                MysqlUtil mySql = new MysqlUtil();
-                bool isadd = mySql.addUser(user);
-                if (isadd)
+                string teamname = team.Text;
+                string userna = username.Text;
+                string pw = userpw.Text;
+                string pwaga = userpwagain.Text;
+                if (teamname.Equals(""))
                 {
-                   
-                    this.Close();
+                    MessageBox.Show("请输入使用团队");
+                }
+                else if (userna.Equals(""))
+                {
+                    MessageBox.Show("请输入用户名");
+                }
+                else if (pw.Equals(""))
+                {
+                    MessageBox.Show("请输入密码");
+                }
+                else if (pwaga.Equals(""))
+                {
+                    MessageBox.Show("请再次输入密码");
+                }
+                else if (!pw.Equals(pwaga))
+                {
+                    MessageBox.Show("两次输入的密码不一致");
                 }
                 else
                 {
-                    MessageBox.Show("添加失败");
+                    string limits = "1";
+                    limits += pccb.IsChecked == true ? ",2" : "";
+                    limits += ptcb.IsChecked == true ? ",3" : "";
+                    limits += usercb.IsChecked == true ? ",4" : "";
+                    UserClass user = new UserClass();
+                    user.team = teamname;
+                    user.username = userna;
+                    user.userpw = pw;
+                    user.limited = limits;
+                    MysqlUtil mySql = new MysqlUtil();
+                    bool isadd = mySql.addUser(user);
+                    if (isadd)
+                    {
+
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("添加失败");
+                    }
                 }
+            }
+        }
+
+        private void usernameLostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            string usernamem = textBox.Text;
+            MysqlUtil mySql = new MysqlUtil();
+            isusernamerepeat = mySql.getUserNameRepeat(usernamem);
+            if (isusernamerepeat)
+            {
+                repeat.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                repeat.Visibility = Visibility.Collapsed;
             }
         }
     }

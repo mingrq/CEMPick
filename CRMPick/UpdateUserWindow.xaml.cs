@@ -32,7 +32,39 @@ namespace CRMPick
             this.userclsaa = userclsaa;
         }
 
-        private void AddUser(object sender, MouseButtonEventArgs e)
+
+        private void ContentRead(object sender, EventArgs e)
+        {
+            team.Text = userclsaa.team;
+            userpw.Text = userclsaa.userpw;
+            userpwagain.Text = userclsaa.userpw;
+            username.Content = userclsaa.username;
+           string limited= userclsaa.limited;
+           string[] limits = limited.Split(',');
+            for (int i = 0; i < limits.Length; i++)
+            {
+                int lim = int.Parse(limits[i]);
+                switch (lim)
+                {
+                    case 1:
+                        crmcb.IsChecked = true;
+                        break;
+                    case 2:
+                        pccb.IsChecked = true;
+                        break;
+                    case 3:
+                        ptcb.IsChecked = true;
+                        break;
+                    case 4:
+                        usercb.IsChecked = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void UpdateUser(object sender, MouseButtonEventArgs e)
         {
             string teamname = team.Text;
             string pw = userpw.Text;
@@ -63,9 +95,10 @@ namespace CRMPick
                 user.team = teamname;
                 user.userpw = pw;
                 user.limited = limits;
+                user.username = (string)username.Content;
                 MysqlUtil mySql = new MysqlUtil();
-                bool isadd = mySql.updateUser(user);
-                if (isadd)
+                bool isupdate = mySql.updateUser(user);
+                if (isupdate)
                 {
                     this.Close();
                 }
@@ -74,17 +107,6 @@ namespace CRMPick
                     MessageBox.Show("添加失败");
                 }
             }
-        }
-
-        private void ContentRead(object sender, EventArgs e)
-        {
-            team.Text = userclsaa.team;
-            userpw.Text = userclsaa.userpw;
-            userpwagain.Text = userclsaa.userpw;
-            username.Content = userclsaa.username;
-           string limited= userclsaa.limited;
-           string[] limits = limited.Split(',');
-           
         }
     }
 }

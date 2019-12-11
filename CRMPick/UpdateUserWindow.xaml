@@ -70,7 +70,7 @@
                 <CheckBox x:Name="usercb" Content="用户管理"/>
             </WrapPanel>
         </StackPanel>
-        <Border MouseLeftButtonDown="AddUser" Style="{StaticResource btnstyb}">
+        <Border MouseLeftButtonDown="UpdateUser" Style="{StaticResource btnstyb}">
             <Label Content="确认修改" Style="{StaticResource btnsty}"/>
         </Border>
     </StackPanel>

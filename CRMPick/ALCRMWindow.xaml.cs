@@ -59,7 +59,7 @@ namespace CRMPick
             BitmapSource bitmap = Clipboard.GetImage();
             Image regImg = new Image();
             regImg.Source = bitmap;
-            Clipboard.Clear();
+            //Clipboard.Clear();
          
         }
            

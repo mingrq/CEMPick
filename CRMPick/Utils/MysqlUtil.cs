@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using CRMPick.Entity;
 using MySql.Data.MySqlClient;
 
@@ -80,15 +81,20 @@ namespace CRMPick.Utils
             }
         }
 
+        internal void getUserNameRepeat(TextBox username)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// 添加用户
+        /// 修改用户
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
         public bool updateUser(UserClass user)
         {
             MySqlConnection conn = MySql();
-            string sql = "UPDATE crm_user SET `team` = '"+user.team+"', `userpw` = '"+user.userpw+"', `limited` = '"+user.limited+"' WHERE `username` = '"+user.username+"'";
+            string sql = "UPDATE crm_user SET `team` = '" + user.team + "', `userpw` = '" + user.userpw + "', `limited` = '" + user.limited + "' WHERE `username` = '" + user.username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int tian = cmd.ExecuteNonQuery();
             conn.Close();
@@ -125,6 +131,18 @@ namespace CRMPick.Utils
             }
         }
 
+        /// <summary>
+        /// 检查用户名是否重复
+        /// </summary>
+        /// <param name="username"></param>
+        public bool getUserNameRepeat(string username)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "select * from crm_user where `username` = '" + username + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            MySqlDataReader reader = cmd.ExecuteReader();
+            return reader.HasRows;
+        }
 
         /// <summary>
         /// 获取所有用户信息
@@ -160,7 +178,7 @@ namespace CRMPick.Utils
         public bool deleteFac(string username)
         {
             MySqlConnection conn = MySql();
-            string sql = "UPDATE crm_user SET `facility` = '', `facilitytwo` = '' WHERE `username` = '"+username+"'";
+            string sql = "UPDATE crm_user SET `facility` = '', `facilitytwo` = '' WHERE `username` = '" + username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int update = cmd.ExecuteNonQuery();
             conn.Close();
@@ -182,7 +200,7 @@ namespace CRMPick.Utils
         public bool deleteUser(string username)
         {
             MySqlConnection conn = MySql();
-            string sql = "DELETE FROM crm_user WHERE `username` = '"+username+"'";
+            string sql = "DELETE FROM crm_user WHERE `username` = '" + username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int update = cmd.ExecuteNonQuery();
             conn.Close();
