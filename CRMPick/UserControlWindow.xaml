@@ -45,8 +45,8 @@
                     <GridViewColumn Width="180"  Header="用户名" DisplayMemberBinding="{Binding Path=username}"/>
                     <GridViewColumn Width="320" Header="设备编号-1" DisplayMemberBinding="{Binding Path=facility}"/>
                     <GridViewColumn Width="320" Header="设备编号-2" DisplayMemberBinding="{Binding Path=facilitytwo}"/>
-                    <GridViewColumn Header="登录次数" Width="140" DisplayMemberBinding="{Binding Path=logincount}"/>
-                    <GridViewColumn Width="300" Header="操作">
+                    <GridViewColumn Header="登录次数" DisplayMemberBinding="{Binding Path=logincount}"/>
+                    <GridViewColumn Header="操作">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">

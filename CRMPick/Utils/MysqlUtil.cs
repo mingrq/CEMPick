@@ -54,6 +54,7 @@ namespace CRMPick.Utils
                 user.facility = reader.GetString("facility");
                 user.facilitytwo = reader.GetString("facilitytwo");
                 user.limited = reader.GetString("limited");
+                user.logincount = reader.GetInt16("logincount");
             }
             conn.Close();
             return user;
@@ -201,6 +202,28 @@ namespace CRMPick.Utils
         {
             MySqlConnection conn = MySql();
             string sql = "DELETE FROM crm_user WHERE `username` = '" + username + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int update = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (update > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 修改登录次数
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public bool updateLoginCount(string username,int count)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "UPDATE crm_user SET `logincount` = '" + count + "' WHERE `username` = '" + username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int update = cmd.ExecuteNonQuery();
             conn.Close();

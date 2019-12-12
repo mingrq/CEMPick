@@ -60,9 +60,7 @@ namespace CRMPick
                         {
                             if (user.facility.Equals(uuid))
                             {
-                                MainWindow mainWindow = new MainWindow();
-                                mainWindow.Show();
-                                this.Close();
+                                LoginSuccess(mySqlUtil, user);
                             }
                             else
                             {
@@ -70,21 +68,17 @@ namespace CRMPick
                                 {
                                     if (user.facilitytwo.Equals(uuid))
                                     {
-                                        MainWindow mainWindow = new MainWindow();
-                                        mainWindow.Show();
-                                        this.Close();
+                                        LoginSuccess(mySqlUtil, user);
                                     }
                                     else
                                     {
-                                        MessageBox.Show("设备不允许使用此工具！");
+                                        MessageBox.Show("设备不允许使用此工具,请联系管理员开通权限！");
                                     }
                                 }
                                 else
                                 {
                                     mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
-                                    MainWindow mainWindow = new MainWindow();
-                                    mainWindow.Show();
-                                    this.Close();
+                                    LoginSuccess(mySqlUtil, user);
                                 }
                             }
 
@@ -92,9 +86,7 @@ namespace CRMPick
                         else
                         {
                             mysqlUtil.updateUUID(uuid, "facility", user.username);
-                            MainWindow mainWindow = new MainWindow();
-                            mainWindow.Show();
-                            this.Close();
+                            LoginSuccess(mySqlUtil, user);
                         }
 
                     }
@@ -124,6 +116,18 @@ namespace CRMPick
             {
                 textBox.Text = FouseContent;
             }
+        }
+
+        /// <summary>
+        /// 登录成功，跳转页面
+        /// </summary>
+        private void LoginSuccess(MysqlUtil mySqlUtil,UserClass user)
+        {
+            user.logincount++;
+            mySqlUtil.updateLoginCount(user.username, user.logincount);
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
         }
 
         /// <summary>
