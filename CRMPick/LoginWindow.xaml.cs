@@ -34,65 +34,80 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            MysqlUtil mySqlUtil = new MysqlUtil();
-            UserClass user = mySqlUtil.getUser(username.Text);
-            if (user != null)
-            {   
-                if (userpw.Text.Equals(user.userpw))
+            string usernamee = username.Text.Trim();
+            string pw = userpw.Password.Trim();
+            if (usernamee.Equals(""))
+            {
+                MessageBox.Show("请输入用户名！");
+                return;
+            }
+            else if (pw.Equals(""))
+            {
+                MessageBox.Show("请输入密码！");
+                return;
+            }
+            else
+            {
+                MysqlUtil mySqlUtil = new MysqlUtil();
+                UserClass user = mySqlUtil.getUser(usernamee);
+                if (user != null)
                 {
-                    MysqlUtil mysqlUtil = new MysqlUtil();
-                    string uuid = UUIDClass.GetUUID();
-                    if (!user.facility.Equals(""))
+                    if (pw.Equals(user.userpw))
                     {
-                        if (user.facility.Equals(uuid))
+                        MysqlUtil mysqlUtil = new MysqlUtil();
+                        string uuid = UUIDClass.GetUUID();
+                        if (!user.facility.Equals(""))
                         {
-                            MainWindow mainWindow = new MainWindow();
-                            mainWindow.Show();
-                            this.Close();
-                        }
-                        else
-                        {
-                            if (!user.facilitytwo.Equals(""))
+                            if (user.facility.Equals(uuid))
                             {
-                                if (user.facilitytwo.Equals(uuid))
-                                {
-                                    MainWindow mainWindow = new MainWindow();
-                                    mainWindow.Show();
-                                    this.Close();
-                                }
-                                else
-                                {
-                                    MessageBox.Show("设备不允许使用此工具！");
-                                }
-                            }
-                            else {
-                                mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
                                 MainWindow mainWindow = new MainWindow();
                                 mainWindow.Show();
                                 this.Close();
                             }
+                            else
+                            {
+                                if (!user.facilitytwo.Equals(""))
+                                {
+                                    if (user.facilitytwo.Equals(uuid))
+                                    {
+                                        MainWindow mainWindow = new MainWindow();
+                                        mainWindow.Show();
+                                        this.Close();
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("设备不允许使用此工具！");
+                                    }
+                                }
+                                else
+                                {
+                                    mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
+                                    MainWindow mainWindow = new MainWindow();
+                                    mainWindow.Show();
+                                    this.Close();
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            mysqlUtil.updateUUID(uuid, "facility", user.username);
+                            MainWindow mainWindow = new MainWindow();
+                            mainWindow.Show();
+                            this.Close();
                         }
 
                     }
                     else
                     {
-                        mysqlUtil.updateUUID(uuid, "facility", user.username);
-                        MainWindow mainWindow = new MainWindow();
-                        mainWindow.Show();
-                        this.Close();
+                        MessageBox.Show("密码错误");
                     }
-                    
                 }
                 else
                 {
-                    MessageBox.Show("密码错误");
+                    MessageBox.Show("用户不存在");
                 }
             }
-            else
-            {
-                MessageBox.Show("用户不存在");
-            }
-
         }
 
 
