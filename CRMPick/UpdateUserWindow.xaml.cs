@@ -22,9 +22,11 @@ namespace CRMPick
     public partial class UpdateUserWindow : Window
     {
         private UserClass userclsaa;
-        public UpdateUserWindow()
+        UserControlWindow userControlWindow;
+        public UpdateUserWindow(UserControlWindow userControlWindow)
         {
             InitializeComponent();
+            this.userControlWindow = userControlWindow;
         }
 
         public void SetUserEntity(UserClass userclsaa)
@@ -100,6 +102,7 @@ namespace CRMPick
                 bool isupdate = mySql.updateUser(user);
                 if (isupdate)
                 {
+                    userControlWindow.resh();
                     this.Close();
                 }
                 else

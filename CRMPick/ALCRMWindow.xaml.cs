@@ -120,7 +120,6 @@ namespace CRMPick
         /// <param name="company"></param>
         private void InquireCompany(string company)
         {
-            string js = "searchFormContact.getWidget('')._setValue('0', 'companyName', " + company + ");searchOpportunity('viaContact');";
             IHTMLDocument2 doc = (IHTMLDocument2)webBrower.Document;
             IHTMLWindow2 win = (IHTMLWindow2)doc.parentWindow;
             /**

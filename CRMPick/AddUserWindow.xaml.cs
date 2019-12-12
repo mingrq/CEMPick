@@ -22,9 +22,11 @@ namespace CRMPick
     public partial class AddUserWindow : Window
     {
         private bool isusernamerepeat = false;
-        public AddUserWindow()
+        UserControlWindow userControlWindow;
+        public AddUserWindow(UserControlWindow userControlWindow)
         {
             InitializeComponent();
+            this.userControlWindow = userControlWindow;
         }
 
         private void AddUser(object sender, MouseButtonEventArgs e)
@@ -74,7 +76,7 @@ namespace CRMPick
                     bool isadd = mySql.addUser(user);
                     if (isadd)
                     {
-
+                        userControlWindow.resh();
                         this.Close();
                     }
                     else
