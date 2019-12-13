@@ -53,6 +53,7 @@
                                     <Button Content="修改" Click="UpdateUser" Margin="5" />
                                     <Button Content="删除" Click="DeleteUser" Margin="5"/>
                                     <Button Content="清空设备" Click="DeleteFac" Margin="5"/>
+                                    <Button Content="密码还原" Click="PWBack" Margin="5"/>
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

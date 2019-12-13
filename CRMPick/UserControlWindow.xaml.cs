@@ -135,5 +135,37 @@ namespace CRMPick
             list.ItemsSource = null;
             list.ItemsSource = users;
         }
+
+        /// <summary>
+        /// 密码还原
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PWBack(object sender, RoutedEventArgs e)
+        {
+            string message = "确认还原该用户登录密码吗!";
+            string caption = "提示";
+            MessageBoxButton buttons = MessageBoxButton.OKCancel;
+            // Show message box
+            MessageBoxResult result = MessageBox.Show(message, caption, buttons);
+            if (result == MessageBoxResult.OK)
+            {
+                var btn = sender as Button;
+                var userclass = btn.DataContext as UserClass;
+                MysqlUtil mysqlUtil = new MysqlUtil();
+                string pw = Encryption.GenerateMD5("111111");
+                if (mysqlUtil.pwback(userclass.username,pw))
+                {
+                    List<UserClass> users = (List<UserClass>)list.ItemsSource;
+                    int i = users.IndexOf(userclass);
+                    users[i].userpw = pw;
+                    MessageBox.Show("密码还原成功!");
+                }
+                else
+                {
+                    MessageBox.Show("还原失败");
+                }
+            }
+        }
     }
 }

@@ -39,8 +39,7 @@ namespace CRMPick
             {
                 string teamname = team.Text;
                 string userna = username.Text;
-                string pw = userpw.Text;
-                string pwaga = userpwagain.Text;
+               
                 if (teamname.Equals(""))
                 {
                     MessageBox.Show("请输入使用团队");
@@ -48,18 +47,6 @@ namespace CRMPick
                 else if (userna.Equals(""))
                 {
                     MessageBox.Show("请输入用户名");
-                }
-                else if (pw.Equals(""))
-                {
-                    MessageBox.Show("请输入密码");
-                }
-                else if (pwaga.Equals(""))
-                {
-                    MessageBox.Show("请再次输入密码");
-                }
-                else if (!pw.Equals(pwaga))
-                {
-                    MessageBox.Show("两次输入的密码不一致");
                 }
                 else
                 {
@@ -70,7 +57,6 @@ namespace CRMPick
                     UserClass user = new UserClass();
                     user.team = teamname;
                     user.username = userna;
-                    user.userpw = pw;
                     user.limited = limits;
                     MysqlUtil mySql = new MysqlUtil();
                     bool isadd = mySql.addUser(user);

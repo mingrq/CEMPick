@@ -49,14 +49,6 @@
             <Label Style="{x:Null}" x:Name="username"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-            <Label Content="用户密码:"/>
-            <TextBox x:Name="userpw"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Label Content="再次密码:"/>
-            <TextBox x:Name="userpwagain"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
             <Label Content="可用功能:" Padding="0"/>
             <WrapPanel >
                 <WrapPanel.Resources>

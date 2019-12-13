@@ -48,6 +48,7 @@ namespace CRMPick
             }
             else
             {
+                pw = Encryption.GenerateMD5(pw);
                 MysqlUtil mySqlUtil = new MysqlUtil();
                 UserClass user = mySqlUtil.getUser(usernamee);
                 if (user != null)
@@ -125,7 +126,7 @@ namespace CRMPick
         {
             user.logincount++;
             mySqlUtil.updateLoginCount(user.username, user.logincount);
-            MainWindow mainWindow = new MainWindow();
+            MainWindow mainWindow = new MainWindow(user);
             mainWindow.Show();
             this.Close();
         }

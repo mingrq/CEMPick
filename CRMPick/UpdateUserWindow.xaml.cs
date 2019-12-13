@@ -27,6 +27,7 @@ namespace CRMPick
         {
             InitializeComponent();
             this.userControlWindow = userControlWindow;
+           
         }
 
         public void SetUserEntity(UserClass userclsaa)
@@ -37,9 +38,8 @@ namespace CRMPick
 
         private void ContentRead(object sender, EventArgs e)
         {
+           
             team.Text = userclsaa.team;
-            userpw.Text = userclsaa.userpw;
-            userpwagain.Text = userclsaa.userpw;
             username.Content = userclsaa.username;
            string limited= userclsaa.limited;
            string[] limits = limited.Split(',');
@@ -69,23 +69,9 @@ namespace CRMPick
         private void UpdateUser(object sender, MouseButtonEventArgs e)
         {
             string teamname = team.Text;
-            string pw = userpw.Text;
-            string pwaga = userpwagain.Text;
             if (teamname.Equals(""))
             {
                 MessageBox.Show("请输入使用团队");
-            }
-            else if (pw.Equals(""))
-            {
-                MessageBox.Show("请输入密码");
-            }
-            else if (pwaga.Equals(""))
-            {
-                MessageBox.Show("请再次输入密码");
-            }
-            else if (!pw.Equals(pwaga))
-            {
-                MessageBox.Show("两次输入的密码不一致");
             }
             else
             {
@@ -95,7 +81,6 @@ namespace CRMPick
                 limits += usercb.IsChecked == true ? ",4" : "";
                 UserClass user = new UserClass();
                 user.team = teamname;
-                user.userpw = pw;
                 user.limited = limits;
                 user.username = (string)username.Content;
                 MysqlUtil mySql = new MysqlUtil();

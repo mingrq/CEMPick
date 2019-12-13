@@ -1,4 +1,5 @@
-﻿using CRMPick.Utils;
+﻿using CRMPick.Entity;
+using CRMPick.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,9 +25,11 @@ namespace CRMPick
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+       private UserClass user;
+        public MainWindow(UserClass user)
         {
             InitializeComponent();
+            this.user = user;
             IeVersionClass ieVersion = new IeVersionClass();
             ieVersion.SetIEVer(IeVersion.标准ie9);
         }
@@ -64,6 +67,14 @@ namespace CRMPick
             BatchChaxunWindow batchChaxunWindow = new BatchChaxunWindow();
             batchChaxunWindow.Topmost = true;
             batchChaxunWindow.Show();
+        }
+
+        private void UserPWUpdateOnClick(object sender, MouseButtonEventArgs e)
+        {
+            UpdatePwWindow updatePwWindow = new UpdatePwWindow();
+            updatePwWindow.SetUserEntity(user);
+            updatePwWindow.Topmost = true;
+            updatePwWindow.Show();
         }
     }
 }

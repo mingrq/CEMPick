@@ -61,7 +61,15 @@
                         <TextBlock TextWrapping="Wrap" Text="用户的增删改查等操作" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
-
+                
+                <StackPanel Orientation="Horizontal">
+                    <Border MouseLeftButtonDown="UserPWUpdateOnClick">
+                        <Label Content="修改密码"/>
+                    </Border>
+                    <Border Style="{x:Null}" Width="360" CornerRadius="4" Background="#19000000"  Margin="20,20,0,0">
+                        <TextBlock TextWrapping="Wrap" Text="用户密码修改" Foreground="#333333"  Margin="8" FontSize="14"/>
+                    </Border>
+                </StackPanel>
                 <!--<WebBrowser x:Name="webBrower" Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"/>-->
             </StackPanel>
 

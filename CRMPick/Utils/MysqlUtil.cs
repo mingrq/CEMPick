@@ -49,6 +49,7 @@ namespace CRMPick.Utils
             while (reader.Read())
             {
                 user = new UserClass();
+                user.team = reader.GetString("team");
                 user.username = reader.GetString("username");
                 user.userpw = reader.GetString("userpw");
                 user.facility = reader.GetString("facility");
@@ -68,7 +69,7 @@ namespace CRMPick.Utils
         public bool addUser(UserClass user)
         {
             MySqlConnection conn = MySql();
-            string sql = "INSERT INTO crm_user(`username`, `userpw`,  `limited`, `team`) VALUES ('" + user.username + "', '" + user.userpw + "', '" + user.limited + "',  '" + user.team + "')";
+            string sql = "INSERT INTO crm_user(`username`, `limited`, `team`) VALUES ('" + user.username + "', '" + user.limited + "',  '" + user.team + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int tian = cmd.ExecuteNonQuery();
             conn.Close();
@@ -95,7 +96,29 @@ namespace CRMPick.Utils
         public bool updateUser(UserClass user)
         {
             MySqlConnection conn = MySql();
-            string sql = "UPDATE crm_user SET `team` = '" + user.team + "', `userpw` = '" + user.userpw + "', `limited` = '" + user.limited + "' WHERE `username` = '" + user.username + "'";
+            string sql = "UPDATE crm_user SET `team` = '" + user.team + "',`limited` = '" + user.limited + "' WHERE `username` = '" + user.username + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int tian = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (tian > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 修改用户密码
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public bool updateUserPw(string username,string pw)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "UPDATE crm_user SET `userpw` = '" + pw + "' WHERE `username` = '" + username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int tian = cmd.ExecuteNonQuery();
             conn.Close();
@@ -202,6 +225,23 @@ namespace CRMPick.Utils
         {
             MySqlConnection conn = MySql();
             string sql = "DELETE FROM crm_user WHERE `username` = '" + username + "'";
+            MySqlCommand cmd = new MySqlCommand(sql, conn);
+            int update = cmd.ExecuteNonQuery();
+            conn.Close();
+            if (update > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool pwback(string username,string pw)
+        {
+            MySqlConnection conn = MySql();
+            string sql = "UPDATE crm_user SET `userpw` = '" + pw + "' WHERE `username` = '" + username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int update = cmd.ExecuteNonQuery();
             conn.Close();
