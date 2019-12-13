@@ -56,40 +56,50 @@ namespace CRMPick
                     if (pw.Equals(user.userpw))
                     {
                         MysqlUtil mysqlUtil = new MysqlUtil();
-                        string uuid = UUIDClass.GetUUID();
-                        if (!user.facility.Equals(""))
+                        /**
+                         *管理员登录不进行uuid对比
+                         */
+                        if (user.username.Equals("admin"))
                         {
-                            if (user.facility.Equals(uuid))
-                            {
-                                LoginSuccess(mySqlUtil, user);
-                            }
-                            else
-                            {
-                                if (!user.facilitytwo.Equals(""))
-                                {
-                                    if (user.facilitytwo.Equals(uuid))
-                                    {
-                                        LoginSuccess(mySqlUtil, user);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("设备不允许使用此工具,请联系管理员开通权限！");
-                                    }
-                                }
-                                else
-                                {
-                                    mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
-                                    LoginSuccess(mySqlUtil, user);
-                                }
-                            }
-
+                            LoginSuccess(mySqlUtil, user);
                         }
                         else
                         {
-                            mysqlUtil.updateUUID(uuid, "facility", user.username);
-                            LoginSuccess(mySqlUtil, user);
-                        }
+                            string uuid = UUIDClass.GetUUID();
+                            if (!user.facility.Equals(""))
+                            {
+                                if (user.facility.Equals(uuid))
+                                {
+                                    LoginSuccess(mySqlUtil, user);
+                                }
+                                else
+                                {
+                                    if (!user.facilitytwo.Equals(""))
+                                    {
+                                        if (user.facilitytwo.Equals(uuid))
+                                        {
+                                            LoginSuccess(mySqlUtil, user);
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("设备不允许使用此工具,请联系管理员开通权限！");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
+                                        LoginSuccess(mySqlUtil, user);
+                                    }
+                                }
 
+                            }
+                            else
+                            {
+                                mysqlUtil.updateUUID(uuid, "facility", user.username);
+                                LoginSuccess(mySqlUtil, user);
+                            }
+                        }
+                        
                     }
                     else
                     {
