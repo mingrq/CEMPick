@@ -262,6 +262,21 @@ namespace CRMPick
             CustomerListClass customer= JsonConvert.DeserializeObject<CustomerListClass>(json);
             MessageBox.Show(customer.errorMsg);
         }
+
+
+        /// <summary>
+        /// 选择文件夹路径按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectFolderButtonClick(object sender, RoutedEventArgs e)
+        {
+            string path = SelectFolder.SelectFolderUtils();
+            if (!path.Equals(""))
+            {
+                pathTb.Text = path;
+            }
+        }
     }
 
     [System.Runtime.InteropServices.ComVisible(true)]

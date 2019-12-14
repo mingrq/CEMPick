@@ -101,6 +101,7 @@
     <Compile Include="Utils\InjectJs.cs" />
     <Compile Include="Utils\Encryption.cs" />
     <Compile Include="Utils\MysqlUtil.cs" />
+    <Compile Include="Utils\SelectFolder.cs" />
     <Compile Include="Utils\UUIDClass.cs" />
     <Page Include="AddUserWindow.xaml">
       <SubType>Designer</SubType>
