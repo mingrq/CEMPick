@@ -22,5 +22,17 @@ namespace CRMPick.Utils
             }
             return path;
         }
+
+
+        /// <summary>
+        /// 获取桌面路径
+        /// </summary>
+        /// <returns></returns>
+        public static string getWinPath()
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        }
+
+       
     }
 }

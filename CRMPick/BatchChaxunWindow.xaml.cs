@@ -43,7 +43,7 @@ namespace CRMPick
         {
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
-
+            this.pathTb.Text = SelectFolder.getWinPath();
         }
 
 

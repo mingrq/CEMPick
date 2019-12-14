@@ -57,10 +57,17 @@ namespace CRMPick
         {
             var btn = sender as Button;
             var userclass = btn.DataContext as UserClass;
-            UpdateUserWindow updateUserWindow = new UpdateUserWindow(this);
-            updateUserWindow.SetUserEntity(userclass);
-            updateUserWindow.Owner = this;
-            updateUserWindow.Show();
+            if (userclass.username.Equals("admin"))
+            {
+                MessageBox.Show("管理员账号不可修改！！");
+            }
+            else
+            {
+                UpdateUserWindow updateUserWindow = new UpdateUserWindow(this);
+                updateUserWindow.SetUserEntity(userclass);
+                updateUserWindow.Owner = this;
+                updateUserWindow.Show();
+            }
         }
 
         /// <summary>
@@ -70,29 +77,35 @@ namespace CRMPick
         /// <param name="e"></param>
         private void DeleteUser(object sender, RoutedEventArgs e)
         {
-            string message = "确认删除该用户吗!";
-            string caption = "提示";
-            MessageBoxButton buttons = MessageBoxButton.OKCancel;
-            // Show message box
-            MessageBoxResult result = MessageBox.Show(message, caption, buttons);
-            if (result==MessageBoxResult.OK)
+            var btn = sender as Button;
+            var userclass = btn.DataContext as UserClass;
+            if (userclass.username.Equals("admin"))
             {
-                var btn = sender as Button;
-                var userclass = btn.DataContext as UserClass;
-                MysqlUtil mysqlUtil = new MysqlUtil();
-                if (mysqlUtil.deleteUser(userclass.username))
+                MessageBox.Show("管理员账号不可删除！！");
+            }
+            else
+            {
+                string message = "确认删除该用户吗!";
+                string caption = "提示";
+                MessageBoxButton buttons = MessageBoxButton.OKCancel;
+                // Show message box
+                MessageBoxResult result = MessageBox.Show(message, caption, buttons);
+                if (result == MessageBoxResult.OK)
                 {
-                    List<UserClass> users = (List<UserClass>)list.ItemsSource;
-                    users.Remove(userclass);
-                    list.ItemsSource = null;
-                    list.ItemsSource = users;
-                }
-                else
-                {
-                    MessageBox.Show("删除失败");
+                    MysqlUtil mysqlUtil = new MysqlUtil();
+                    if (mysqlUtil.deleteUser(userclass.username))
+                    {
+                        List<UserClass> users = (List<UserClass>)list.ItemsSource;
+                        users.Remove(userclass);
+                        list.ItemsSource = null;
+                        list.ItemsSource = users;
+                    }
+                    else
+                    {
+                        MessageBox.Show("删除失败");
+                    }
                 }
             }
-            
         }
 
         /// <summary>
