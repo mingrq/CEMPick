@@ -49,6 +49,21 @@
             <Label Style="{x:Null}" x:Name="username"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
+            <Label Content="资源数量:" Padding="0"/>
+            <Border BorderThickness="1" BorderBrush="#999999" Padding="5">
+                <StackPanel Orientation="Horizontal" Style="{x:Null}">
+                    <Label Content="采集工具:"/>
+                    <TextBox x:Name="gatherresourcecount" Margin="0" Style="{x:Null}" Width="70"/>
+                </StackPanel>
+            </Border>
+            <Border Margin="10,0,0,0" BorderThickness="1" BorderBrush="#999999" Padding="5">
+                <StackPanel Orientation="Horizontal" Style="{x:Null}">
+                    <Label Content="挑入工具:"/>
+                    <TextBox x:Name="tiaoruresourcecount" Margin="0" Style="{x:Null}" Width="70"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
             <Label Content="可用功能:" Padding="0"/>
             <WrapPanel >
                 <WrapPanel.Resources>
@@ -62,6 +77,7 @@
                 <CheckBox x:Name="usercb" Content="用户管理"/>
             </WrapPanel>
         </StackPanel>
+        
         <Border MouseLeftButtonDown="UpdateUser" Style="{StaticResource btnstyb}">
             <Label Content="确认修改" Style="{StaticResource btnsty}"/>
         </Border>

@@ -16,7 +16,8 @@ namespace CRMPick.Entity
         public string facilitytwo { set; get; }
         public string limited { set; get; }
         public int logincount { set; get; }
+        public int gatherresourcecount { set; get; }
+        public int tiaoruresourcecount { set; get; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

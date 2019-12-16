@@ -226,7 +226,11 @@ namespace CRMPick
             //开始查询
             if (CanOperation)
             {
-                excelPath = ExcelOperation.CreateExcel(path, 1);//创建excel
+                //判断本页面是否创建excel，没有创建就创建
+                if (excelPath.Equals(""))
+                {
+                    excelPath = ExcelOperation.CreateExcel(path, 1);//创建excel
+                }
                 string tbresousess = tbresouses.Text.Trim();
                 if (tbresousess.Equals("") || tbresousess.Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
                 {

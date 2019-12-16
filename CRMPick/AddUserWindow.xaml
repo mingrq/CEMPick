@@ -50,6 +50,21 @@
             <Label x:Name="repeat" Visibility="Collapsed" Content="**用户名已存在" FontSize="10" Foreground="Red" Style="{x:Null}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
+            <Label Content="资源数量:" Padding="0"/>
+            <Border BorderThickness="1" BorderBrush="#999999" Padding="5">
+                <StackPanel Orientation="Horizontal" Style="{x:Null}">
+                    <Label Content="采集工具:"/>
+                    <TextBox x:Name="gatherresourcecount" Text="50" Margin="0" Style="{x:Null}" Width="70" VerticalContentAlignment="Center"/>
+                </StackPanel>
+            </Border>
+            <Border Margin="10,0,0,0" BorderThickness="1" BorderBrush="#999999" Padding="5">
+                <StackPanel Orientation="Horizontal" Style="{x:Null}">
+                    <Label Content="挑入工具:"/>
+                    <TextBox x:Name="tiaoruresourcecount" Text="50" Margin="0" Style="{x:Null}" VerticalContentAlignment="Center" Width="70"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
             <Label Content="可用功能:" Padding="0"/>
             <WrapPanel >
                 <WrapPanel.Resources>

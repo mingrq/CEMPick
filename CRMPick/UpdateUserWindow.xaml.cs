@@ -27,7 +27,7 @@ namespace CRMPick
         {
             InitializeComponent();
             this.userControlWindow = userControlWindow;
-           
+
         }
 
         public void SetUserEntity(UserClass userclsaa)
@@ -38,11 +38,13 @@ namespace CRMPick
 
         private void ContentRead(object sender, EventArgs e)
         {
-           
+
             team.Text = userclsaa.team;
             username.Content = userclsaa.username;
-           string limited= userclsaa.limited;
-           string[] limits = limited.Split(',');
+            tiaoruresourcecount.Text = userclsaa.tiaoruresourcecount.ToString();
+            gatherresourcecount.Text = userclsaa.gatherresourcecount.ToString();
+            string limited = userclsaa.limited;
+            string[] limits = limited.Split(',');
             for (int i = 0; i < limits.Length; i++)
             {
                 int lim = int.Parse(limits[i]);
@@ -64,11 +66,14 @@ namespace CRMPick
                         break;
                 }
             }
+
         }
 
         private void UpdateUser(object sender, MouseButtonEventArgs e)
         {
             string teamname = team.Text;
+            string tiaorucount = tiaoruresourcecount.Text.Trim();
+            string gathercount = gatherresourcecount.Text.Trim();
             if (teamname.Equals(""))
             {
                 MessageBox.Show("请输入使用团队");
@@ -83,6 +88,8 @@ namespace CRMPick
                 user.team = teamname;
                 user.limited = limits;
                 user.username = (string)username.Content;
+                user.tiaoruresourcecount = int.Parse(tiaorucount);
+                user.gatherresourcecount = int.Parse(gathercount);
                 MysqlUtil mySql = new MysqlUtil();
                 bool isupdate = mySql.updateUser(user);
                 if (isupdate)

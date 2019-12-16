@@ -56,6 +56,8 @@ namespace CRMPick.Utils
                 user.facilitytwo = reader.GetString("facilitytwo");
                 user.limited = reader.GetString("limited");
                 user.logincount = reader.GetInt16("logincount");
+                user.gatherresourcecount = reader.GetInt16("gatherresourcecount");
+                user.tiaoruresourcecount = reader.GetInt16("tiaoruresourcecount");
             }
             conn.Close();
             return user;
@@ -69,7 +71,7 @@ namespace CRMPick.Utils
         public bool addUser(UserClass user)
         {
             MySqlConnection conn = MySql();
-            string sql = "INSERT INTO crm_user(`username`, `limited`, `team`) VALUES ('" + user.username + "', '" + user.limited + "',  '" + user.team + "')";
+            string sql = "INSERT INTO crm_user(`username`, `limited`, `team`, `gatherresourcecount`, `tiaoruresourcecount`) VALUES ('" + user.username + "', '" + user.limited + "',  '" + user.team + "',  '" + user.gatherresourcecount + "',  '" + user.tiaoruresourcecount + "')";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int tian = cmd.ExecuteNonQuery();
             conn.Close();
@@ -96,7 +98,7 @@ namespace CRMPick.Utils
         public bool updateUser(UserClass user)
         {
             MySqlConnection conn = MySql();
-            string sql = "UPDATE crm_user SET `team` = '" + user.team + "',`limited` = '" + user.limited + "' WHERE `username` = '" + user.username + "'";
+            string sql = "UPDATE crm_user SET `team` = '" + user.team + "',`limited` = '" + user.limited + "',`gatherresourcecount` = '" + user.gatherresourcecount + "',`tiaoruresourcecount` = '" + user.tiaoruresourcecount + "' WHERE `username` = '" + user.username + "'";
             MySqlCommand cmd = new MySqlCommand(sql, conn);
             int tian = cmd.ExecuteNonQuery();
             conn.Close();
@@ -189,6 +191,8 @@ namespace CRMPick.Utils
                 user.facilitytwo = reader.GetString("facilitytwo");
                 user.limited = reader.GetString("limited");
                 user.logincount = reader.GetInt16("logincount");
+                user.gatherresourcecount = reader.GetInt16("gatherresourcecount");
+                user.tiaoruresourcecount = reader.GetInt16("tiaoruresourcecount");
                 users.Add(user);
             }
             return users;

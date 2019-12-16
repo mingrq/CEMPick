@@ -37,9 +37,11 @@ namespace CRMPick
             }
             else
             {
-                string teamname = team.Text;
-                string userna = username.Text;
-               
+                string teamname = team.Text.Trim();
+                string userna = username.Text.Trim();
+                string tiaorucount = tiaoruresourcecount.Text.Trim();
+                string gathercount = gatherresourcecount.Text.Trim();
+
                 if (teamname.Equals(""))
                 {
                     MessageBox.Show("请输入使用团队");
@@ -58,6 +60,8 @@ namespace CRMPick
                     user.team = teamname;
                     user.username = userna;
                     user.limited = limits;
+                    user.tiaoruresourcecount = int.Parse(tiaorucount);
+                    user.gatherresourcecount = int.Parse(gathercount);
                     MysqlUtil mySql = new MysqlUtil();
                     bool isadd = mySql.addUser(user);
                     if (isadd)

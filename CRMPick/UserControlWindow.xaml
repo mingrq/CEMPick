@@ -43,6 +43,8 @@
                 <GridView>
                     <GridViewColumn Width="200" Header="团队" DisplayMemberBinding="{Binding Path=team}"/>
                     <GridViewColumn Width="180"  Header="用户名" DisplayMemberBinding="{Binding Path=username}"/>
+                    <GridViewColumn  Header="采集数量" DisplayMemberBinding="{Binding Path=gatherresourcecount}"/>
+                    <GridViewColumn  Header="挑入数量" DisplayMemberBinding="{Binding Path=tiaoruresourcecount}"/>
                     <GridViewColumn Width="320" Header="设备编号-1" DisplayMemberBinding="{Binding Path=facility}"/>
                     <GridViewColumn Width="320" Header="设备编号-2" DisplayMemberBinding="{Binding Path=facilitytwo}"/>
                     <GridViewColumn Header="登录次数" DisplayMemberBinding="{Binding Path=logincount}"/>
