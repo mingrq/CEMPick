@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -84,16 +85,9 @@ namespace CRMPick
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //CacheImage cacheImage = new CacheImage();
-            ////string s= cacheImage.GetCacheImage(webBrower, "testimg");
-            ////MessageBox.Show(s);
-            //verimg.Source = cacheImage.GetCacheImage(webBrower, "testimg");
-
-
-
-            string currentPath = SelectFolder.getWinPath();
-            ExcelOperation.CreateExcel(currentPath ,1);
-            MessageBox.Show("文件创建成功!");
+            Random ran = new Random();
+            int RandKey = ran.Next(10000, 20000);
+            MessageBox.Show(RandKey+"");
         }
     }
 

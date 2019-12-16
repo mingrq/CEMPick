@@ -45,6 +45,12 @@ namespace CRMPick
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
             this.pathTb.Text = SelectFolder.getWinPath();
+            if (!ExcelOperation.CheckExcelExist())
+            {
+                //没有Excel
+                MessageBox.Show("你的电脑上没有安装Excel");
+                return;
+            }
         }
 
 
@@ -105,8 +111,6 @@ namespace CRMPick
             {
                 //查询
                 searchjs(company);
-                // Thread.Sleep(RandomTime());//延时
-                //InquireCompany();//循环
             }
 
         }
@@ -193,12 +197,6 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!ExcelOperation.CheckExcelExist())
-            {
-                //没有Excel
-                MessageBox.Show("你的电脑上没有安装Excel");
-                return;
-            }
             //获取excel放置位置
             string path = pathTb.Text.Trim();
             if (path.Equals(""))
@@ -252,9 +250,8 @@ namespace CRMPick
         private string getimgcheckcode()
         {
             CacheImage cacheImage = new CacheImage();
-            //string verificationCode = cacheImage.GetCacheImage(webBrower, "imgcheckcode");
-            //return verificationCode;
-            return "";
+            string code = cacheImage.GetCacheImage(webBrower, "testimg");
+            return code;
         }
 
         /// <summary>
@@ -285,16 +282,27 @@ namespace CRMPick
         }
 
         /// <summary>
-        ///搜索结束、 解析json，分析公司资源状态
+        /// 开启子线程操作查询数据
         /// </summary>
         /// <param name="json"></param>
-        public void analyzeCompany(string json)
+        public void AnalyzeCompanyThead(string json)
         {
+            Thread t = new Thread(AnalyzeCompany);//创建了线程还未开启
+            t.Start(json);//用来给函数传递参数，开启线程
+        }
+
+        /// <summary>
+        ///搜索结束、 解析json，分析公司资源状态
+        /// </summary>
+        /// <param name="jsons"></param>
+        public void AnalyzeCompany(object jsons)
+        {
+            string json = (string)jsons;
             CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
             string err = customer.errorMsg;//搜索错误信息
-                                        //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
+                                           //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
 
-            if (err!=null&&err.Equals("checkcode_error"))
+            if (err != null && err.Equals("checkcode_error"))
             {
                 //验证码错误,请求之后验证码要消失掉
                 verfiyCode();
@@ -361,9 +369,6 @@ namespace CRMPick
                     }
                     resourceNameDifferentCount = 0;
                     SeaCustomerOpportunityList = null;
-
-                    Thread.Sleep(RandomTime());//延时
-                    InquireCompany();//循环采集
                 }
             }
         }
@@ -446,6 +451,8 @@ namespace CRMPick
             saler = null;
             time = null;
             organization = null;
+            Thread.Sleep(RandomTime());//延时
+            InquireCompany();//循环
         }
     }
 
@@ -462,7 +469,8 @@ namespace CRMPick
         //供JS调用
         public void CsharpVoid(string json)
         {
-            batchChaxunWindow.analyzeCompany(json);
+            
+            batchChaxunWindow.AnalyzeCompanyThead(json);
         }
     }
 }

@@ -192,7 +192,9 @@ namespace CRMPick.Utils
             int index = html.IndexOf("param.sessionid");
             string cutHtml = html.Substring(index);
             string needCutsession = cutHtml.Substring(0, cutHtml.IndexOf(";") - 1);
+            Console.WriteLine("needCutsession:  " + needCutsession);
             string session = needCutsession.Substring(needCutsession.IndexOf("\"") + 1);
+            Console.WriteLine("session:  " + session);
             return session;
         }
     }
