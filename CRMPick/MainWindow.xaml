@@ -39,10 +39,10 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Border MouseLeftButtonDown="BatchChaxunOnClick">
-                        <Label Content="批量查询"/>
+                        <Label Content="批量采集"/>
                     </Border>
                     <Border Style="{x:Null}" Width="360" CornerRadius="4" Background="#19000000"  Margin="20,20,0,0">
-                        <TextBlock TextWrapping="Wrap" Text="用户的增删改查等操作" Foreground="#333333"  Margin="8" FontSize="14"/>
+                        <TextBlock TextWrapping="Wrap" Text="可将输入的资源信息采集，保存到指定路径的Excel中" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using CRMPick.Utils;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -81,7 +84,16 @@ namespace CRMPick
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            //CacheImage cacheImage = new CacheImage();
+            ////string s= cacheImage.GetCacheImage(webBrower, "testimg");
+            ////MessageBox.Show(s);
+            //verimg.Source = cacheImage.GetCacheImage(webBrower, "testimg");
 
+
+
+            string currentPath = SelectFolder.getWinPath();
+            ExcelOperation.CreateExcel(currentPath ,1);
+            MessageBox.Show("文件创建成功!");
         }
     }
 

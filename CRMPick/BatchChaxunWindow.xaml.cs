@@ -31,7 +31,8 @@ namespace CRMPick
         private InjectJs inject;
         private IHTMLDocument2 doc;
         private IHTMLWindow2 win;
-
+        private string resource;//正在搜索的资源
+        private string excelPath = "";
         public BatchChaxunWindow()
         {
             InitializeComponent();
@@ -83,6 +84,7 @@ namespace CRMPick
                 tbresouses.Text = string.Join("\n", companylist.ToArray());
 
             }
+            resource = firstcompany;
             return firstcompany;
         }
 
@@ -138,14 +140,7 @@ namespace CRMPick
         /// <param name="company"></param>
         private void searchjs(string company)
         {
-            if (doc == null)
-            {
-                doc = (IHTMLDocument2)webBrower.Document;
-            }
-            if (win == null)
-            {
-                win = (IHTMLWindow2)doc.parentWindow;
-            }
+            getWinScript();
             if (inject == null)
             {
                 inject = new InjectJs(this.webBrower);
@@ -154,6 +149,22 @@ namespace CRMPick
             win.execScript("$('input.shy-input[id]').eq(0).val('" + company + "');searchFormContact.getWidget('')._setValue('0', 'companyName', '" + company + "');", "javascript");//添加公司资源JS
             win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
         }
+
+        /// <summary>
+        /// 执行js前需要获取html的window
+        /// </summary>
+        private void getWinScript()
+        {
+            if (doc == null)
+            {
+                doc = (IHTMLDocument2)webBrower.Document;
+            }
+            if (win == null)
+            {
+                win = (IHTMLWindow2)doc.parentWindow;
+            }
+        }
+
 
         /// <summary>
         /// 网页加载完毕监听
@@ -223,11 +234,14 @@ namespace CRMPick
         }
 
         /// <summary>
-        /// 获取验证码
+        /// 获取验证码结果
         /// </summary>
-        private void getimgcheckcode()
+        private string getimgcheckcode()
         {
-            CacheImage.GetCacheImage(webBrower, "imgcheckcode");
+            CacheImage cacheImage = new CacheImage();
+            //string verificationCode = cacheImage.GetCacheImage(webBrower, "imgcheckcode");
+            //return verificationCode;
+            return "";
         }
 
         /// <summary>
@@ -259,10 +273,90 @@ namespace CRMPick
         /// <param name="json"></param>
         public void analyzeCompany(string json)
         {
-            CustomerListClass customer= JsonConvert.DeserializeObject<CustomerListClass>(json);
-            MessageBox.Show(customer.errorMsg);
+            CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
+            var err = customer.errorMsg;//搜索错误信息
+                                        //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
+
+            if (err.Equals("checkcode_error"))
+            {
+                //验证码错误,请求之后验证码要消失掉
+                verfiyCode();
+                return;
+            }
+            else if (err.Equals("checkcode_need"))
+            {
+                //本次操作需要输入验证码后才能继续，请输入验证码后重新搜索
+                verfiyCode();
+                return;
+            }
+            else
+            {
+                //搜索成功
+                List<AllCustomerOpportunityListItem> AllCustomerOpportunityList = customer.allCustomerOpportunityList;
+                if (AllCustomerOpportunityList.Count == 0)
+                {
+                    //没有查询到符合条件的客户
+                    resourceRecord(resource, null, 0);
+                }
+                else
+                {
+                    List<AllCustomerOpportunityListItem> SeaCustomerOpportunityList = null;
+                    int resourceNameDifferentCount = 0;
+                    //存在资源
+                    for (int i = 0; i < AllCustomerOpportunityList.Count; i++)
+                    {
+                        //1、先判断所有资源名称是否相同
+                        AllCustomerOpportunityListItem item = AllCustomerOpportunityList[i];
+                        if (item.companyName.Equals(resource))
+                        {
+                            //2、判断是否有在库中的资源,有在仓库的直接记录后开始下一条资源查询
+                            if (item.productType.Equals("1") && item.depotOrSea.Equals("depot"))
+                            {
+                                resourceRecord(resource, item, 3);
+                                SeaCustomerOpportunityList = null;
+                                resourceNameDifferentCount = 0;
+                                return;
+                            }
+                            else
+                            {
+                                if (SeaCustomerOpportunityList == null)
+                                {
+                                    SeaCustomerOpportunityList = new List<AllCustomerOpportunityListItem>();
+                                }
+                                SeaCustomerOpportunityList.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            //资源名称与搜索名称不同
+                            resourceNameDifferentCount++;
+                        }
+                    }
+                    if (resourceNameDifferentCount == AllCustomerOpportunityList.Count)
+                    {
+                        //4、所有资源名称都不正确
+                        resourceRecord(resource, null, 1);
+                    }
+                    else
+                    {
+                        //3、所有资源都在公海，将信息记录
+                        resourceRecord(resource, SeaCustomerOpportunityList[0], 2);
+                    }
+                    resourceNameDifferentCount = 0;
+                    SeaCustomerOpportunityList = null;
+                }
+            }
         }
 
+        /// <summary>
+        /// 需要验证码，打码
+        /// </summary>
+        private void verfiyCode()
+        {
+            getWinScript();
+            win.execScript("$('#textcheckcode').val('" + getimgcheckcode() + "');", "javascript");//将打码后的验证码添加到输入框
+            win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
+        }
 
         /// <summary>
         /// 选择文件夹路径按钮
@@ -276,6 +370,62 @@ namespace CRMPick
             {
                 pathTb.Text = path;
             }
+        }
+
+        /// <summary>
+        /// 资源记录，保存到excel
+        /// </summary>
+        /// <param name="resource">搜索的资源名称</param>
+        /// <param name="item"></param>
+        /// <param name="tag">0：没有资源 ；1：公司名称不符；2：公海 ；3：仓库</param>
+        private void resourceRecord(string resource, AllCustomerOpportunityListItem item, int tag)
+        {
+            string result = "";
+            string globalId = "";
+            string orderArrived = "";
+            string type = "";
+            string saler = "";
+            string time = "";
+            string organization = "";
+            switch (tag)
+            {
+                case 0://没有资源
+                    result = "没有搜索到这个资源";
+                    break;
+                case 1://公司名称不符
+                    result = "没有搜索到名称匹配资源";
+                    break;
+                case 2://公海
+                    globalId = item.globalId;
+                    orderArrived = "未到单";
+                    type = "公海";
+                    time = item.gmtlastOperate;
+                    organization = "公海";
+                    break;
+                case 3://仓库
+                    globalId = item.globalId;
+                    if (item.orderArrived.Equals("n"))
+                    {
+                        orderArrived = "未到单";
+                    }
+                    else if (item.orderArrived.Equals("y"))
+                    {
+                        orderArrived = "已到单";
+                    }
+                    type = "仓库中";
+                    saler = item.ownerName;
+                    time = item.gmtlastOperate;
+                    organization = item.orgFullNamePath;
+                    break;
+            }
+            ExcelOperation.WriteToExcel(1, excelPath, resource, result, globalId, orderArrived, type, saler, time, organization);
+            result = null;
+            globalId = null;
+            orderArrived = null;
+            type = null;
+            saler = null;
+            time = null;
+            organization = null;
         }
     }
 

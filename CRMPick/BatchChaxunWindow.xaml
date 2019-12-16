@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRMPick"
         mc:Ignorable="d"
-        Title="批量查询" Height="450" Width="800" WindowState="Maximized">
+        Title="批量采集" Height="450" Width="800" WindowState="Maximized">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -36,7 +36,7 @@
                 <Label Content="~" FontSize="10" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="ends" Width="50" VerticalContentAlignment="Center"/>
                 <Label Content="秒" FontSize="10" VerticalContentAlignment="Center"/>
-                <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始查询" Click="Button_Click"/>
+                <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始采集" Click="Button_Click"/>
             </StackPanel>
         </Grid>
     </Grid>

@@ -12,12 +12,13 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="360"/>
         </Grid.ColumnDefinitions>
-        <WebBrowser x:Name="webBrower"  Source="http://demo.22com.cn/crm/test6.html"></WebBrowser>
+        <WebBrowser x:Name="webBrower"  Source="http://demo.22com.cn/crm/test.html"></WebBrowser>
         <Rectangle Grid.Column="1" Width="2" Fill="#DBDBDB"/>
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="300"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Label FontSize="14" FontWeight="Bold" Padding="0" Content="客户资源:" Margin="20,20,0,0"/>
@@ -30,6 +31,11 @@
                 <Label Content="秒" FontSize="10" VerticalContentAlignment="Center"/>
                 <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始查询" Click="Button_Click"/>
             </StackPanel>
+            <StackPanel Grid.Row="3" Margin="0,10,0,0" Orientation="Horizontal" Height="50">
+                <Label Content="验证码:" />
+                <Image x:Name="verimg" Width="100" Height="50"/>
+            </StackPanel>
         </Grid>
+        
     </Grid>
 </Window>
