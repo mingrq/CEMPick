@@ -105,10 +105,8 @@ namespace CRMPick
             {
                 //查询
                 searchjs(company);
-
-
                 // Thread.Sleep(RandomTime());//延时
-                InquireCompany();//循环
+                //InquireCompany();//循环
             }
 
         }
@@ -195,6 +193,20 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (!ExcelOperation.CheckExcelExist())
+            {
+                //没有Excel
+                MessageBox.Show("你的电脑上没有安装Excel");
+                return;
+            }
+            //获取excel放置位置
+            string path = pathTb.Text.Trim();
+            if (path.Equals(""))
+            {
+                MessageBox.Show("请设置文件保存路径!");
+                return;
+            }
+
             //获取间隔时间
             if (starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
             {
@@ -216,6 +228,7 @@ namespace CRMPick
             //开始查询
             if (CanOperation)
             {
+                excelPath = ExcelOperation.CreateExcel(path, 1);//创建excel
                 string tbresousess = tbresouses.Text.Trim();
                 if (tbresousess.Equals("") || tbresousess.Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
                 {
@@ -256,6 +269,8 @@ namespace CRMPick
                 startBtn.IsEnabled = false;
                 starts.IsEnabled = false;
                 ends.IsEnabled = false;
+                pathTb.IsEnabled = false;
+                pathsele.IsEnabled = false;
             }
             else
             {
@@ -264,6 +279,8 @@ namespace CRMPick
                 startBtn.IsEnabled = true;
                 starts.IsEnabled = true;
                 ends.IsEnabled = true;
+                pathTb.IsEnabled = true;
+                pathsele.IsEnabled = true;
             }
         }
 
@@ -274,16 +291,16 @@ namespace CRMPick
         public void analyzeCompany(string json)
         {
             CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
-            var err = customer.errorMsg;//搜索错误信息
+            string err = customer.errorMsg;//搜索错误信息
                                         //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
 
-            if (err.Equals("checkcode_error"))
+            if (err!=null&&err.Equals("checkcode_error"))
             {
                 //验证码错误,请求之后验证码要消失掉
                 verfiyCode();
                 return;
             }
-            else if (err.Equals("checkcode_need"))
+            else if (err != null && err.Equals("checkcode_need"))
             {
                 //本次操作需要输入验证码后才能继续，请输入验证码后重新搜索
                 verfiyCode();
@@ -344,6 +361,9 @@ namespace CRMPick
                     }
                     resourceNameDifferentCount = 0;
                     SeaCustomerOpportunityList = null;
+
+                    Thread.Sleep(RandomTime());//延时
+                    InquireCompany();//循环采集
                 }
             }
         }

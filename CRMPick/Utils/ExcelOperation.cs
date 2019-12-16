@@ -18,7 +18,7 @@ namespace CRMPick.Utils
         {
             bool isExist = false;
             Application excelApp = new Application();
-            if (excelApp == null)
+            if (excelApp != null)
             {
                 isExist = true;
             }
@@ -66,6 +66,7 @@ namespace CRMPick.Utils
                 workSheet.Cells[1, 5] = "状态";
                 workSheet.Cells[1, 6] = "所属销售";
                 workSheet.Cells[1, 7] = "操作时间";
+                workSheet.Cells[1, 8] = "销售组织";
             }
             else
             {
@@ -118,9 +119,10 @@ namespace CRMPick.Utils
                 mysheet.Cells[maxrow, 5] = type;
                 mysheet.Cells[maxrow, 6] = saler;
                 mysheet.Cells[maxrow, 7] = time;
+                mysheet.Cells[maxrow, 8] = organization;
             }
             mybook.Save();
-            mybook.Close(false, Type.Missing, Type.Missing);
+            mybook.Close(false, Missing.Value, Missing.Value);
             mybook = null;
             //quit excel app
             app.Quit();

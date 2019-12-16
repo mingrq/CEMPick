@@ -24,8 +24,8 @@
             <StackPanel Margin="20,20,0,0" Grid.Row="0">
                 <Label  Padding="0" Content="设置文件保存路径:"/>
                 <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
-                    <TextBox x:Name="pathTb" Height="24" Width="286"/>
-                    <Button Content="..." Margin="10,0,0,0" Height="24" Width="24" Click="SelectFolderButtonClick"></Button>
+                    <TextBox x:Name="pathTb" Height="24" Width="286" VerticalContentAlignment="Center"/>
+                    <Button x:Name="pathsele" Content="..." Margin="10,0,0,0" Height="24" Width="24" Click="SelectFolderButtonClick"></Button>
                 </StackPanel>
             </StackPanel>
             <Label Grid.Row="1" FontSize="14" FontWeight="Bold" Padding="0" Content="客户资源:" Margin="20,20,0,0"/>

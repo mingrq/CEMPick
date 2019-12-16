@@ -101,8 +101,6 @@ namespace CRMPick.Utils
 "            imagespacher.update('');\n" +
 "        },\n" +
 "        onSuccess: function (ret) {\n" +
-"            var json =JSON.stringify(ret).toString();\n"+
-"            window.external.CsharpVoid(json);\n" +
 "            window.allCustomer.conflictOpportunityIds = new Array(); // 查询完毕后，清空提交判单申请的结果。提交撞单机会Id\n" +
 "            window.allCustomer.costTime.queryForList = new Date().getTime() - queryBeginTime;\n" +
 "            exceptionMsg.hide();\n" +
@@ -174,6 +172,8 @@ namespace CRMPick.Utils
 "            searchOppBySelectProductType(selectProductLine);\n" +
 "            window.allCustomer.costTime.total = new Date().getTime() - queryBeginTime;\n" +
 "            Behaviour.addLog(shy.json(window.allCustomer.costTime));\n" +
+"            var json =JSON.stringify(ret).toString();\n" +
+"            window.external.CsharpVoid(json);\n" +
 "        }\n" +
 "    });\n" +
 "    window.allCustomer.costTime.searchOpportunity = new Date().getTime() - beginTime;\n" +
