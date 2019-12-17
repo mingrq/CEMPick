@@ -36,7 +36,7 @@ namespace CRMPick
         private string resource;//正在搜索的资源
         private string excelPath = "";
         private UserClass user;
-        private string hint = "将客户资源复制到文本框中，点击开始采集，程序将采集到的信息保存到指定的Excel中";
+        private string hint = "将客户资源复制到文本框中，点击开始挑入，程序会将挑入的信息保存到指定的Excel中";
         private string filesavepath = Directory.GetCurrentDirectory() + "\\excelpath.txt";//excel路径保存文件
         string excelpath;
         private int codeerr = 0;//验证码错误次数
@@ -55,7 +55,7 @@ namespace CRMPick
                     for (int i = 0; i < accearray.Length; i++)
                     {
                         string exce = accearray[i];
-                        if (exce.IndexOf("caiji") >= 0)
+                        if (exce.IndexOf("tiaoru") >= 0)
                         {
                             this.pathTb.Text = exce.Substring(exce.IndexOf('@') + 1);
                         }
@@ -68,7 +68,7 @@ namespace CRMPick
                 this.pathTb.Text = SelectFolder.getWinPath();
             }
             this.user = user;
-            xianzhi.Content = "*最多输入" + user.gatherresourcecount + "条资源!";
+            xianzhi.Content = "*最多输入" + user.tiaoruresourcecount + "条资源!";
             this.ContentRendered += MLoad;
             this.webBrower.ObjectForScripting = new TiaoRuScriptEvent(this);
         }
@@ -274,7 +274,7 @@ namespace CRMPick
                 //判断本页面是否创建excel，没有创建就创建
                 if (excelPath.Equals(""))
                 {
-                    excelPath = ExcelOperation.CreateExcel(excelpath, 1);//创建excel
+                    excelPath = ExcelOperation.CreateExcel(excelpath, 2);//创建excel
                 }
                 if (!excelPath.Equals(""))
                 {
@@ -309,7 +309,7 @@ namespace CRMPick
             StreamWriter sw = null;
             fs = new FileStream(filesavepath, FileMode.OpenOrCreate);
             sw = new StreamWriter(fs);
-            sw.WriteLine("caiji@" + excelpath + "\n");
+            sw.WriteLine("tiaoru@" + excelpath + "\n");
             sw.Close();
             fs.Close();
         }
@@ -557,7 +557,6 @@ namespace CRMPick
                 //要执行的方法
                 InquireCompany();//循环
             }));
-
         }
 
         /// <summary>
