@@ -29,7 +29,7 @@
                 </Style>
             </Grid.Resources>
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel x:Name="sp_crm" Orientation="Horizontal" Visibility="Collapsed">
                     <Border MouseLeftButtonDown="CRMOnClick">
                         <Label Content="进入CRM"/>
                     </Border>
@@ -37,7 +37,7 @@
                         <TextBlock TextWrapping="Wrap" Text="使用阿里CRM库，没有任何附加功能" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel x:Name="sp_caiji" Orientation="Horizontal"  Visibility="Collapsed">
                     <Border MouseLeftButtonDown="BatchChaxunOnClick">
                         <Label Content="批量采集"/>
                     </Border>
@@ -45,7 +45,7 @@
                         <TextBlock TextWrapping="Wrap" Text="可将输入的资源信息采集，保存到指定路径的Excel中" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel x:Name="sp_tiaoru" Orientation="Horizontal"  Visibility="Collapsed">
                     <Border MouseLeftButtonDown="BatchTiaoRuOnClick">
                         <Label Content="批量挑入"/>
                     </Border>
@@ -53,7 +53,7 @@
                         <TextBlock TextWrapping="Wrap" Text="用户的增删改查等操作" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel x:Name="sp_yonguguanli" Orientation="Horizontal" Visibility="Collapsed">
                     <Border MouseLeftButtonDown="UserControlOnClick">
                         <Label Content="用户管理"/>
                     </Border>

@@ -53,13 +53,13 @@
             <Border BorderThickness="1" BorderBrush="#999999" Padding="5">
                 <StackPanel Orientation="Horizontal" Style="{x:Null}">
                     <Label Content="采集工具:"/>
-                    <TextBox PreviewTextInput="restTime_PreviewTextInput" x:Name="gatherresourcecount" Margin="0" Style="{x:Null}" Width="70" VerticalContentAlignment="Center"/>
+                    <TextBox InputMethod.IsInputMethodEnabled="False" PreviewTextInput="restTime_PreviewTextInput" x:Name="gatherresourcecount" Margin="0" Style="{x:Null}" Width="70" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Border>
             <Border Margin="10,0,0,0" BorderThickness="1" BorderBrush="#999999" Padding="5">
                 <StackPanel Orientation="Horizontal" Style="{x:Null}">
                     <Label Content="挑入工具:"/>
-                    <TextBox PreviewTextInput="restTime_PreviewTextInput" x:Name="tiaoruresourcecount" Margin="0" Style="{x:Null}" Width="70" VerticalContentAlignment="Center"/>
+                    <TextBox InputMethod.IsInputMethodEnabled="False"  PreviewTextInput="restTime_PreviewTextInput" x:Name="tiaoruresourcecount" Margin="0" Style="{x:Null}" Width="70" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Border>
         </StackPanel>

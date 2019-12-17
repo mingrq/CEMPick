@@ -33,9 +33,13 @@ namespace CRMPick
         private IHTMLWindow2 win;
         private string resource;//正在搜索的资源
         private string excelPath = "";
-        public BatchChaxunWindow()
+        private UserClass user;
+        private string hint = "将客户资源复制到文本框中，点击开始采集，程序将采集到的信息保存到指定的Excel中";
+        public BatchChaxunWindow(UserClass user)
         {
             InitializeComponent();
+            this.user = user;
+            xianzhi.Content = "*最多输入" + user.gatherresourcecount + "条资源!";
             this.ContentRendered += MLoad;
             this.webBrower.ObjectForScripting = new ChaXunScriptEvent(this);
         }
@@ -58,14 +62,14 @@ namespace CRMPick
         {
             if (tbresouses.Text.Trim().Equals(""))
             {
-                tbresouses.Text = "将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息";
+                tbresouses.Text = hint;
             }
         }
 
 
         private void TbGotF(object sender, RoutedEventArgs e)
         {
-            if (tbresouses.Text.Trim().Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
+            if (tbresouses.Text.Trim().Equals(hint))
             {
                 tbresouses.Text = "";
             }
@@ -79,15 +83,15 @@ namespace CRMPick
         private string getNextCompanyName()
         {
             string firstcompany = "";
-            string tbresousess = tbresouses.Text;
-            if (!tbresousess.Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
+            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r");
+            if (!tbresousess.Equals(hint))
             {
-                string[] companys = tbresousess.Split('\n');
+                string[] companys = tbresousess.Split('\r');
                 firstcompany = companys[0].Trim();//要查询的公司资源
                 /*将第一条资源删除*/
                 List<string> companylist = companys.ToList();
                 companylist.RemoveAt(0);
-                tbresouses.Text = string.Join("\n", companylist.ToArray());
+                tbresouses.Text = string.Join("\r", companylist.ToArray());
 
             }
             resource = firstcompany;
@@ -105,6 +109,7 @@ namespace CRMPick
             {
                 //查询结束
                 reshUi(1);
+                tbresouses.Text = hint;
                 MessageBox.Show("没有资源了，查询结束！！");
             }
             else
@@ -231,16 +236,23 @@ namespace CRMPick
                 {
                     excelPath = ExcelOperation.CreateExcel(path, 1);//创建excel
                 }
-                string tbresousess = tbresouses.Text.Trim();
-                if (tbresousess.Equals("") || tbresousess.Equals("将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息"))
+                if (!excelPath.Equals(""))
                 {
-                    MessageBox.Show("没有资源了");
+                    string tbresousess = tbresouses.Text.Trim();
+                    if (tbresousess.Equals("") || tbresousess.Equals(hint))
+                    {
+                        MessageBox.Show("没有资源了");
+                    }
+                    else
+                    {
+                        reshUi(0);
+                        InquireCompany();
+                    }
                 }
                 else
                 {
-                    reshUi(0);
-                    InquireCompany();
-                }
+                    MessageBox.Show("Excel创建失败!");
+                }  
             }
             else
             {
@@ -456,7 +468,32 @@ namespace CRMPick
             time = null;
             organization = null;
             Thread.Sleep(RandomTime());//延时
-            InquireCompany();//循环
+            this.Dispatcher.BeginInvoke((Action)(delegate ()
+            {
+                //要执行的方法
+                InquireCompany();//循环
+            }));
+        }
+
+        /// <summary>
+        /// 文本变化监听
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textChanged(object sender, TextChangedEventArgs e)
+        {
+            if (user != null)
+            {
+                TextBox textBox = sender as TextBox;
+                string tbresousess = textBox.Text.Replace("\r\n","\r").Replace("\n","\r");
+                string[] companys = tbresousess.Split('\r');
+                if (companys.Length > user.gatherresourcecount)
+                {
+                    List<string> companylist = companys.ToList();
+                    companylist.RemoveRange(user.gatherresourcecount, companys.Length - user.gatherresourcecount);
+                    tbresouses.Text = string.Join("\r", companylist.ToArray());
+                }
+            }
         }
     }
 

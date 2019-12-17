@@ -18,6 +18,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="300"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -29,8 +30,9 @@
                 </StackPanel>
             </StackPanel>
             <Label Grid.Row="1" FontSize="14" FontWeight="Bold" Padding="0" Content="客户资源:" Margin="20,20,0,0"/>
-            <TextBox x:Name="tbresouses" Padding="5" GotFocus="TbGotF" LostFocus="TbLostF" Text="将客户资源复制到文本框中，点击查询，每点击一次查询自动搜索出该公司信息" Grid.Row="2" AcceptsReturn="True"  Width="320" Margin="20,5,20,20" TextWrapping="Wrap"/>
-            <StackPanel Margin="20,0,0,0" Grid.Row="3"  Orientation="Horizontal">
+            <Label Grid.Row="2" FontSize="12" Padding="0" Foreground="Red" x:Name="xianzhi" Margin="20,0,0,0"/>
+            <TextBox x:Name="tbresouses" Padding="5" TextChanged="textChanged" GotFocus="TbGotF" LostFocus="TbLostF" Text="将客户资源复制到文本框中，点击开始采集，程序将采集到的信息保存到指定的Excel中" Grid.Row="3" AcceptsReturn="True"  Width="320" Margin="20,5,20,20" TextWrapping="Wrap"/>
+            <StackPanel Margin="20,0,0,0" Grid.Row="4"  Orientation="Horizontal">
                 <Label Content="间隔:" FontSize="10" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="starts" Width="50" VerticalContentAlignment="Center"/>
                 <Label Content="~" FontSize="10" VerticalContentAlignment="Center"/>

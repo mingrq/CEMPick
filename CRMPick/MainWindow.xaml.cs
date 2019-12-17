@@ -25,14 +25,37 @@ namespace CRMPick
     /// </summary>
     public partial class MainWindow : Window
     {
-       private UserClass user;
+        private UserClass user;
         public MainWindow(UserClass user)
         {
             InitializeComponent();
             this.user = user;
             IeVersionClass ieVersion = new IeVersionClass();
             ieVersion.SetIEVer(IeVersion.标准ie9);
+            string limiteds = user.limited;
+            string[] limitarray = limiteds.Split(',');
+            for (int i = 0; i < limitarray.Length; i++)
+            {
+                if (limitarray[i].Equals("1"))//crm
+                {
+                    sp_crm.Visibility = Visibility.Visible;
+                }
+                if (limitarray[i].Equals("2"))//采集
+                {
+                    sp_caiji.Visibility = Visibility.Visible;
+                }
+                if (limitarray[i].Equals("3"))//挑入
+                {
+                    sp_tiaoru.Visibility = Visibility.Visible;
+                }
+                if (limitarray[i].Equals("4"))//用户管理
+                {
+                    sp_yonguguanli.Visibility = Visibility.Visible;
+                }
+            }
         }
+
+
 
         /// <summary>
         /// 用户管理窗口
@@ -64,7 +87,7 @@ namespace CRMPick
 
         private void BatchChaxunOnClick(object sender, MouseButtonEventArgs e)
         {
-            BatchChaxunWindow batchChaxunWindow = new BatchChaxunWindow();
+            BatchChaxunWindow batchChaxunWindow = new BatchChaxunWindow(user);
             batchChaxunWindow.Topmost = true;
             batchChaxunWindow.Show();
         }
