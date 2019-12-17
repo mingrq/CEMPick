@@ -4,6 +4,7 @@ using mshtml;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -35,9 +36,35 @@ namespace CRMPick
         private string excelPath = "";
         private UserClass user;
         private string hint = "将客户资源复制到文本框中，点击开始采集，程序将采集到的信息保存到指定的Excel中";
+        private string filesavepath = Directory.GetCurrentDirectory() + "\\excelpath.txt";//excel路径保存文件
+        string excelpath;
+        private int codeerr = 0;//验证码错误次数
         public BatchChaxunWindow(UserClass user)
         {
             InitializeComponent();
+            if (File.Exists(filesavepath))
+            {
+                //账号信息文件存在
+                StreamReader reader = new StreamReader(filesavepath);
+                string acce = reader.ReadToEnd();
+                if (!acce.Trim().Equals(""))
+                {
+                    string[] accearray = acce.Split('\n');
+                    for (int i = 0; i < accearray.Length; i++)
+                    {
+                        string exce = accearray[i];
+                        if (exce.IndexOf("caiji")>=0)
+                        {
+                            this.pathTb.Text = exce.Substring(exce.IndexOf('@')+1);
+                        }
+                    }
+                    reader.Close();
+                }
+            }
+            if (this.pathTb.Text.Trim().Equals(""))
+            {
+                this.pathTb.Text = SelectFolder.getWinPath();
+            }
             this.user = user;
             xianzhi.Content = "*最多输入" + user.gatherresourcecount + "条资源!";
             this.ContentRendered += MLoad;
@@ -48,7 +75,7 @@ namespace CRMPick
         {
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
-            this.pathTb.Text = SelectFolder.getWinPath();
+            
             if (!ExcelOperation.CheckExcelExist())
             {
                 //没有Excel
@@ -120,6 +147,10 @@ namespace CRMPick
 
         }
 
+        /// <summary>
+        /// 随机延时数
+        /// </summary>
+        /// <returns></returns>
         public int RandomTime()
         {
             Random ran = new Random();
@@ -138,6 +169,12 @@ namespace CRMPick
             var script = (IHTMLScriptElement)htmlDoc.createElement("script");
             script.src = "https://demo.22com.cn/crm/json2.js";
             head.appendChild((IHTMLDOMNode)script);
+            getWinScript();
+            if (inject == null)
+            {
+                inject = new InjectJs(this.webBrower);
+            }
+            win.execScript(inject.getOverrideJs(), "javascript");//替换JS
         }
 
 
@@ -148,11 +185,7 @@ namespace CRMPick
         private void searchjs(string company)
         {
             getWinScript();
-            if (inject == null)
-            {
-                inject = new InjectJs(this.webBrower);
-            }
-            win.execScript(inject.getOverrideJs(), "javascript");//替换JS
+            win.execScript("_shy_.alert_close();", "javascript");//关闭弹窗JS
             win.execScript("$('input.shy-input[id]').eq(0).val('" + company + "');searchFormContact.getWidget('')._setValue('0', 'companyName', '" + company + "');", "javascript");//添加公司资源JS
             win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
         }
@@ -203,12 +236,16 @@ namespace CRMPick
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //获取excel放置位置
-            string path = pathTb.Text.Trim();
-            if (path.Equals(""))
+            excelpath = pathTb.Text.Trim();
+            if (excelpath.Equals(""))
             {
                 MessageBox.Show("请设置文件保存路径!");
                 return;
             }
+
+            //保存设置的文件路径
+            Thread thread = new Thread(SaveUserAcc);
+            thread.Start();
 
             //获取间隔时间
             if (starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
@@ -234,7 +271,7 @@ namespace CRMPick
                 //判断本页面是否创建excel，没有创建就创建
                 if (excelPath.Equals(""))
                 {
-                    excelPath = ExcelOperation.CreateExcel(path, 1);//创建excel
+                    excelPath = ExcelOperation.CreateExcel(excelpath, 1);//创建excel
                 }
                 if (!excelPath.Equals(""))
                 {
@@ -261,12 +298,26 @@ namespace CRMPick
         }
 
         /// <summary>
+        /// 将文件保存到本地
+        /// </summary>
+        private void SaveUserAcc()
+        {
+            FileStream fs = null;
+            StreamWriter sw = null;
+            fs = new FileStream(filesavepath, FileMode.OpenOrCreate);
+            sw = new StreamWriter(fs);
+            sw.WriteLine("caiji@" + excelpath+"\n");
+            sw.Close();
+            fs.Close();
+        }
+
+        /// <summary>
         /// 获取验证码结果
         /// </summary>
         private string getimgcheckcode()
         {
             CacheImage cacheImage = new CacheImage();
-            string code = cacheImage.GetCacheImage(webBrower, "testimg");
+            string code = cacheImage.GetCacheImage(webBrower, "imgcheckcode");
             return code;
         }
 
@@ -292,8 +343,6 @@ namespace CRMPick
                 startBtn.IsEnabled = true;
                 starts.IsEnabled = true;
                 ends.IsEnabled = true;
-                pathTb.IsEnabled = true;
-                pathsele.IsEnabled = true;
             }
         }
 
@@ -301,10 +350,21 @@ namespace CRMPick
         /// 开启子线程操作查询数据
         /// </summary>
         /// <param name="json"></param>
-        public void AnalyzeCompanyThead(string json)
+        Thread t;
+        public void AnalyzeCompanyThead(int tag,string json)
         {
-            Thread t = new Thread(AnalyzeCompany);//创建了线程还未开启
-            t.Start(json);//用来给函数传递参数，开启线程
+            if (tag==0)
+            {
+                //搜索失败
+                MessageBox.Show("连接服务器失败！");
+                reshUi(0);
+            }
+            else
+            {
+                t = new Thread(AnalyzeCompany);//创建了线程还未开启
+                t.Start(json);//用来给函数传递参数，开启线程
+            }
+            
         }
 
         /// <summary>
@@ -314,24 +374,44 @@ namespace CRMPick
         public void AnalyzeCompany(object jsons)
         {
             string json = (string)jsons;
+            Console.WriteLine(json);
             CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
             string err = customer.errorMsg;//搜索错误信息
-                                           //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
+            //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
 
-            if (err != null && err.Equals("checkcode_error"))
+            if ((err != null && err.Equals("checkcode_error"))||(err != null && err.Equals("checkcode_need")))
             {
+                codeerr++;
                 //验证码错误,请求之后验证码要消失掉
-                verfiyCode();
-                return;
-            }
-            else if (err != null && err.Equals("checkcode_need"))
-            {
-                //本次操作需要输入验证码后才能继续，请输入验证码后重新搜索
-                verfiyCode();
-                return;
+                this.Dispatcher.BeginInvoke((Action)(delegate ()
+                {
+                    //要执行的方法
+                    if (codeerr<=4)
+                    {
+                        getWinScript();
+                        win.execScript("reloadcode();", "javascript");//刷新验证码
+                        Thread thr = new Thread(() =>
+                        {
+                            //这里还可以处理些比较耗时的事情。
+                            Thread.Sleep(2000);//延时10秒
+                            this.Dispatcher.Invoke(new Action(() =>
+                            {
+                                verfiyCode();//打码
+                            }));
+                        });
+                        thr.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("验证码错误次数过多！");
+                        reshUi(1);
+                    }
+                   
+                }));
             }
             else
             {
+                codeerr = 0;
                 //搜索成功
                 List<AllCustomerOpportunityListItem> AllCustomerOpportunityList = customer.allCustomerOpportunityList;
                 if (AllCustomerOpportunityList.Count == 0)
@@ -394,7 +474,6 @@ namespace CRMPick
         /// </summary>
         private void verfiyCode()
         {
-            getWinScript();
             win.execScript("$('#textcheckcode').val('" + getimgcheckcode() + "');", "javascript");//将打码后的验证码添加到输入框
             win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
         }
@@ -468,11 +547,13 @@ namespace CRMPick
             time = null;
             organization = null;
             Thread.Sleep(RandomTime());//延时
+            
             this.Dispatcher.BeginInvoke((Action)(delegate ()
             {
                 //要执行的方法
                 InquireCompany();//循环
             }));
+            
         }
 
         /// <summary>
@@ -497,6 +578,9 @@ namespace CRMPick
         }
     }
 
+    /// <summary>
+    /// js调用C#类
+    /// </summary>
     [System.Runtime.InteropServices.ComVisible(true)]
     public class ChaXunScriptEvent
     {
@@ -508,10 +592,9 @@ namespace CRMPick
         }
 
         //供JS调用
-        public void CsharpVoid(string json)
+        public void CsharpVoid(int tag, string json)
         {
-            
-            batchChaxunWindow.AnalyzeCompanyThead(json);
+            batchChaxunWindow.AnalyzeCompanyThead(tag, json);
         }
     }
 }

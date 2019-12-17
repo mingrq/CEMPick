@@ -80,7 +80,7 @@ namespace CRMPick
 
         private void BatchTiaoRuOnClick(object sender, MouseButtonEventArgs e)
         {
-            BatchTiaoRuWindow batchTiaoRuWindow = new BatchTiaoRuWindow();
+            BatchTiaoRuWindow batchTiaoRuWindow = new BatchTiaoRuWindow(user);
             batchTiaoRuWindow.Topmost = true;
             batchTiaoRuWindow.Show();
         }

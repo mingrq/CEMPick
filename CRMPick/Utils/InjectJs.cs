@@ -99,6 +99,10 @@ namespace CRMPick.Utils
 "            exceptionMsg.setText(ex.getMessage());\n" +
 "            exceptionMsg.show();\n" +
 "            imagespacher.update('');\n" +
+//-----------搜索失败-----------
+"            var json = \"\";\n" +
+"            window.external.CsharpVoid(0,json);\n" +
+//------------------
 "        },\n" +
 "        onSuccess: function (ret) {\n" +
 "            window.allCustomer.conflictOpportunityIds = new Array(); // 查询完毕后，清空提交判单申请的结果。提交撞单机会Id\n" +
@@ -107,14 +111,27 @@ namespace CRMPick.Utils
 "            //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入\n" +
 "            if (ret.errorMsg == 'checkcode_error') {\n" +
 "                imagespacher.update(checkcodestr + checkcodestrerror);//请求之后验证码要消失掉\n" +
+//-----------搜索成功-----------
+"            var json =JSON.stringify(ret).toString();\n" +
+"            window.external.CsharpVoid(1,json);\n" +
+//------------------
 "                return;\n" +
 "            } else if (ret.errorMsg == 'checkcode_need') {\n" +
 "                imagespacher.update(checkcodestr + '<font color=\"red\">本次操作需要输入验证码后才能继续，请输入验证码后重新搜索！</font>');\n" +
+//-----------搜索成功-----------
+"            var json =JSON.stringify(ret).toString();\n" +
+"            window.external.CsharpVoid(1,json);\n" +
+//------------------
 "                return;\n" +
 "            } else {\n" +
 "                imagespacher.update('');\n" +
 "            }\n" +
-"\n" +
+
+//-----------搜索成功-----------
+"            var json =JSON.stringify(ret).toString();\n" +
+"            window.external.CsharpVoid(1,json);\n" +
+//------------------
+
 "            allCustomer.queryResult = ret.allCustomerOpportunityList;\n" +
 "            if (empty(allCustomer.queryResult)) {\n" +
 "                exceptionMsg.setText(\"没有查询到符合条件的客户。\");\n" +
@@ -172,8 +189,6 @@ namespace CRMPick.Utils
 "            searchOppBySelectProductType(selectProductLine);\n" +
 "            window.allCustomer.costTime.total = new Date().getTime() - queryBeginTime;\n" +
 "            Behaviour.addLog(shy.json(window.allCustomer.costTime));\n" +
-"            var json =JSON.stringify(ret).toString();\n" +
-"            window.external.CsharpVoid(json);\n" +
 "        }\n" +
 "    });\n" +
 "    window.allCustomer.costTime.searchOpportunity = new Date().getTime() - beginTime;\n" +
@@ -187,14 +202,18 @@ namespace CRMPick.Utils
         /// <returns></returns>
         private string getSession()
         {
-            HTMLDocument document = webBrower.Document as HTMLDocument;
-            string html = document.body.innerHTML;
-            int index = html.IndexOf("param.sessionid");
-            string cutHtml = html.Substring(index);
-            string needCutsession = cutHtml.Substring(0, cutHtml.IndexOf(";") - 1);
-            Console.WriteLine("needCutsession:  " + needCutsession);
-            string session = needCutsession.Substring(needCutsession.IndexOf("\"") + 1);
-            Console.WriteLine("session:  " + session);
+            string session = "";
+            string uri = webBrower.Source.ToString();
+            string url = "https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm";
+            if (url.IndexOf(uri) > -1)
+            {
+                HTMLDocument document = webBrower.Document as HTMLDocument;
+                string html = document.body.innerHTML;
+                int index = html.IndexOf("param.sessionid");
+                string cutHtml = html.Substring(index);
+                string needCutsession = cutHtml.Substring(0, cutHtml.IndexOf(";") - 1);
+                 session = needCutsession.Substring(needCutsession.IndexOf("\"") + 1);
+            }
             return session;
         }
     }
