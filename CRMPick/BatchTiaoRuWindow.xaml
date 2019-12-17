@@ -21,6 +21,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="300"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Margin="20,20,0,0" Grid.Row="0">
                 <Label  Padding="0" Content="设置文件保存路径:"/>
@@ -40,6 +41,7 @@
                 <Label Content="秒" FontSize="10" VerticalContentAlignment="Center"/>
                 <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始挑入" Click="Button_Click"/>
             </StackPanel>
+            
         </Grid>
     </Grid>
 </Window>

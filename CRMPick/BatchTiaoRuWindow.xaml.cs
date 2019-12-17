@@ -41,6 +41,8 @@ namespace CRMPick
         string excelpath;
         private int codeerr = 0;//验证码错误次数
 
+        private bool clockstop = false;//定时关闭 true：停止 false：继续
+
         public BatchTiaoRuWindow(UserClass user)
         {
             InitializeComponent();
@@ -333,7 +335,7 @@ namespace CRMPick
             if (startOrover == 0)
             {
                 //正在查询
-                startBtn.Content = "正在查询";
+                startBtn.Content = "正在挑入";
                 startBtn.IsEnabled = false;
                 starts.IsEnabled = false;
                 ends.IsEnabled = false;
@@ -343,7 +345,7 @@ namespace CRMPick
             else
             {
                 //未开始查询
-                startBtn.Content = "开始查询";
+                startBtn.Content = "开始挑入";
                 startBtn.IsEnabled = true;
                 starts.IsEnabled = true;
                 ends.IsEnabled = true;
@@ -555,7 +557,10 @@ namespace CRMPick
             this.Dispatcher.BeginInvoke((Action)(delegate ()
             {
                 //要执行的方法
-                InquireCompany();//循环
+                if (!clockstop)
+                {
+                    InquireCompany();//循环
+                }
             }));
         }
 

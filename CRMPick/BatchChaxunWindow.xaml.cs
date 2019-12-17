@@ -329,7 +329,7 @@ namespace CRMPick
             if (startOrover == 0)
             {
                 //正在查询
-                startBtn.Content = "正在查询";
+                startBtn.Content = "正在采集";
                 startBtn.IsEnabled = false;
                 starts.IsEnabled = false;
                 ends.IsEnabled = false;
@@ -339,7 +339,7 @@ namespace CRMPick
             else
             {
                 //未开始查询
-                startBtn.Content = "开始查询";
+                startBtn.Content = "开始采集";
                 startBtn.IsEnabled = true;
                 starts.IsEnabled = true;
                 ends.IsEnabled = true;
