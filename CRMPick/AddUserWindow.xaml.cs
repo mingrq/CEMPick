@@ -40,8 +40,8 @@ namespace CRMPick
             {
                 string teamname = team.Text.Trim();
                 string userna = username.Text.Trim();
-                string tiaorucount = tiaoruresourcecount.Text.Trim();
-                string gathercount = gatherresourcecount.Text.Trim();
+                string tiaorucount = tiaoruresourcecount.Text.Trim().Length > 9 ? "999999999" : tiaoruresourcecount.Text.Trim();
+                string gathercount = gatherresourcecount.Text.Trim().Length > 9 ? "999999999" : gatherresourcecount.Text.Trim();
 
                 if (teamname.Equals(""))
                 {
@@ -61,8 +61,8 @@ namespace CRMPick
                     user.team = teamname;
                     user.username = userna;
                     user.limited = limits;
-                    user.tiaoruresourcecount = int.Parse(tiaorucount);
-                    user.gatherresourcecount = int.Parse(gathercount);
+                    user.tiaoruresourcecount = long.Parse(tiaorucount) > 999999999 ? 999999999 : int.Parse(tiaorucount);
+                    user.gatherresourcecount = long.Parse(gathercount) > 999999999 ? 999999999 : int.Parse(gathercount);
                     MysqlUtil mySql = new MysqlUtil();
                     bool isadd = mySql.addUser(user);
                     if (isadd)

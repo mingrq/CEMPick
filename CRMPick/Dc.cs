@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace DcVerCode
+namespace CRMPick
 {
     public static class Dc
     {

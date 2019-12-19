@@ -197,6 +197,152 @@ namespace CRMPick.Utils
         }
 
         /// <summary>
+        /// 获取挑入js
+        /// </summary>
+        /// <returns></returns>
+        public string getOverridePickInJs()
+        {
+            string pickjs = "function overrDoPick(pickType){\n" +
+"        // 如果没有可挑入的机会可选 时提醒销售\n" +
+"        var canPickRows = selectOpp.getRows();\n" +
+"        if(canPickRows.length == 0){\n" +
+"            window.external.DoPick(1);\n" +
+"            shy.alert(\"您挑入的公司名有重复，有违规风险，不可挑入，请仔细检查撞单（非销售角色没有挑入权限）\");\n" +
+"            return;\n" +
+"        }\n" +
+"\n" +
+"        var rows = getSelectedRows();\n" +
+"        if(rows.length == 0){\n" +
+"            window.external.DoPick(2);\n" +
+"            shy.alert(\"请选中挑入的机会\");\n" +
+"            return;\n" +
+"        }\n" +
+"\n" +
+"        var param = queryForm.getRow();\n" +
+"        param.set(\"selectedOpp\",rows);\n" +
+"        param.set(\"from\",result.getRow().from);\n" +
+"        // 转介绍挑入检查loginId\n" +
+"        if(pickType != undefined && pickType == 'introCustPick'){\n" +
+"            if(param.sourceGlobalId == undefined || param.sourceGlobalId.length <= 0){\n" +
+"                window.external.DoPick(3);\n" +
+"                shy.alert('源介绍客户Id不能为空且必须在你名下!');\n" +
+"                return;\n" +
+"            }\n" +
+"        }\n" +
+"        // 根据是否是简单leadsSource选择框，选择最终的leadsSource\n" +
+"        if(simpleLeadsSourceHiddenInput.getValue() == \"1\") {\n" +
+"            param.set(\"depotLeadsSourceFinal\", param.depotLeadsSource3);\n" +
+"        }else {\n" +
+"            param.set(\"depotLeadsSourceFinal\", param.depotLeadsSource2);\n" +
+"        }\n" +
+"        var ret;\n" +
+"        if(pickType != undefined && pickType == 'introCustPick'){\n" +
+"            ret = shy.rpc.pickIntroCustomer(param);\n" +
+"        }else{\n" +
+"            ret = shy.rpc.selectOpp(param);\n" +
+"        }\n" +
+"\n" +
+"        failOppListModel.load(ret.failOppList);\n" +
+"        successOppListModel.load(ret.successOppList);\n" +
+"        successMessageModel.load(ret.successMessage);\n" +
+"\n" +
+"        resultPanel.show();\n" +
+"        if(ret.incall && \"success\" == ret.errorMessage){\n" +
+"            alitalkOnlineHbox.show();\n" +
+"            successOppListGrid.show();\n" +
+"        }\n" +
+"\n" +
+"        if(failOppListModel.getRow()!=null){\n" +
+"            failOppListGrid.show();\n" +
+"        }else{\n" +
+"            failOppListGrid.hide();\n" +
+"        }\n" +
+"\n" +
+"        errorMessage.setText(overrGetErrorMessage(ret));\n" +
+"    }\n" +
+"\n" +
+"    function overrGetErrorMessage(ret){\n" +
+"        if(ret.errorMessage==\"reachDeoptLimit\"){\n" +
+"            window.external.DoPick(4);\n" +
+"            if(ret.deoptLimit!=0){\n" +
+"                return \"已达到仓库上限\"+ret.deoptLimit+\"或者没有设置仓库上限\";\n" +
+"            }else{\n" +
+"                return \"已达到仓库上限或者没有设置仓库上限\";\n" +
+"            }\n" +
+"        }else if(ret.errorMessage== \"reachSelectLimit\"){\n" +
+"            window.external.DoPick(5);\n" +
+"            if(ret.daySelectLimit!=0){\n" +
+"                return \"已达到日挑入上限\"+ret.daySelectLimit+\",不能挑入\";\n" +
+"            }else if(ret.monthSelectLimit!=0){\n" +
+"                return \"已达到月挑入上限\"+ret.monthSelectLimit+\",不能挑入\";\n" +
+"            }else{\n" +
+"                return \"已达到挑入上限,不能挑入\";\n" +
+"            }\n" +
+"        }else if(ret.errorMessage==\"GroupFull\"){\n" +
+"            window.external.DoPick(6);\n" +
+"            return \"该组中没有可用的sales\";\n" +
+"        }else if(ret.errorMessage==\"hasFailOppList\"){\n" +
+"            window.external.DoPick(7);\n" +
+"            return \"挑入失败的机会\";\n" +
+"        }else if(ret.errorMessage==\"napoliSendSuccess\"){\n" +
+"            window.external.DoPick(8);\n" +
+"            return \"提交成功，系统后台正在转移客户\";\n" +
+"        }else if(ret.errorMessage==\"success\"){\n" +
+"            window.external.DoPick(0);\n" +
+"            return \"客户已经成功挑入给您，请先搜索撞单后再跟进！\";\n" +
+"        }else if(ret.errorMessage==\"noTargetSales\"){\n" +
+"            window.external.DoPick(9);\n" +
+"            return \"挑入失败，没有目标销售\";\n" +
+"        }else if(ret.errorMessage == \"introsource_get_globalid_null\"){\n" +
+"            return \"挑入机会的GlobalID为空\";\n" +
+"        }else if(ret.errorMessage == \"introsource_group_full\"){\n" +
+"            return \"该组中没有可用的sales\";\n" +
+"        }else if(ret.errorMessage == \"introsource_no_oppids\"){\n" +
+"            window.external.DoPick(12);\n" +
+"            return \"挑入机会不能为空，请检查机会是否正常后再试\";\n" +
+"        }else if(ret.errorMessage == \"introsource_pick_failed\"){\n" +
+"            window.external.DoPick(13);\n" +
+"            return \"挑入失败,请检查库容或者机会是否正常后再试\";\n" +
+"        }else if(ret.errorMessage == \"introsource_pick_all_failed\"){\n" +
+"            return \"挑入机会全部失败,请检查库容或者机会是否正常后再试\";\n" +
+"        }else if(ret.errorMessage == \"introsource_can_not_pickorcreate\"){\n" +
+"            return \"没有权限转介绍新增或挑入\";\n" +
+"        }else if(ret.errorMessage == \"introsource_loginid_to_memberid_null\"){\n" +
+"            return \"源介绍客户ID无法转换成AliID,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_memberid_not_normal\"){\n" +
+"            return \"源介绍客户的AliID非正常状态,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_memberid_not_cbu\"){\n" +
+"            return \"源介绍客户的AliID非中文站注册,不能更改,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_customer_with_invalid_member_id\"){\n" +
+"            return \"源介绍客户的AliID在网站不存在,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_aliid_to_globalid_null\"){\n" +
+"            return \"源介绍客户ID无法转换成GlobalID,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_opportunity_null\"){\n" +
+"            return \"源介绍客户ID没有对应的机会,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_opportunity_not_in_depot\"){\n" +
+"            return \"源介绍客户ID的机会不在你的仓库内,请更改id后重新操作\";\n" +
+"        }else if(ret.errorMessage == \"introsource_no_introduce_capacity\"){\n" +
+"            return \"转介绍上限已满\";\n" +
+"        }else if(ret.errorMessage == \"introsource_create_relation_error\"){\n" +
+"            return \"创建转介绍关系失败\";\n" +
+"        }else if(ret.errorMessage == \"introsource_add_customer_limit_error\"){\n" +
+"            return \"增加转介绍量失败\";\n" +
+"        }else if(ret.errorMessage == \"create_customer_error_because_no_selling_permission\"){\n" +
+"            return \"没有售卖权限\";\n" +
+"        }else if(ret.errorMessage == \"create_customer_error_because_beyond_depot_limit\"){\n" +
+"            window.external.DoPick(14);\n" +
+"            return \"分发目标的库容已满\";\n" +
+"        }else{\n" +
+"            return ret.errorMessage;\n" +
+"        }\n" +
+"    }";
+
+            return pickjs;
+        }
+
+       
+
+        /// <summary>
         /// 获取session
         /// </summary>
         /// <returns></returns>
@@ -212,7 +358,7 @@ namespace CRMPick.Utils
                 int index = html.IndexOf("param.sessionid");
                 string cutHtml = html.Substring(index);
                 string needCutsession = cutHtml.Substring(0, cutHtml.IndexOf(";") - 1);
-                 session = needCutsession.Substring(needCutsession.IndexOf("\"") + 1);
+                session = needCutsession.Substring(needCutsession.IndexOf("\"") + 1);
             }
             return session;
         }

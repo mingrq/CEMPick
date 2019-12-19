@@ -371,7 +371,7 @@ namespace CRMPick
         ///搜索结束、 解析json，分析公司资源状态
         /// </summary>
         /// <param name="jsons"></param>
-        public void AnalyzeCompany(object jsons)
+        private void AnalyzeCompany(object jsons)
         {
             string json = (string)jsons;
             Console.WriteLine(json);
@@ -393,7 +393,7 @@ namespace CRMPick
                         Thread thr = new Thread(() =>
                         {
                             //这里还可以处理些比较耗时的事情。
-                            Thread.Sleep(2000);//延时10秒
+                            Thread.Sleep(2000);//延时2秒
                             this.Dispatcher.Invoke(new Action(() =>
                             {
                                 verfiyCode();//打码

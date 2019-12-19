@@ -26,8 +26,9 @@ namespace CRMPick
     /// </summary>
     public partial class BatchTiaoRuWindow : Window
     {
-
+        private bool XunHuanTiaoRuc=false;//是否循环挑入
         private bool CanOperation = false;//可以操作
+        private bool CanPick = false;//可以操作
         private int startss = 10000;//开始间隔毫秒
         private int endss = 20000;//结束间隔毫秒
         private InjectJs inject;
@@ -40,7 +41,7 @@ namespace CRMPick
         private string filesavepath = Directory.GetCurrentDirectory() + "\\excelpath.txt";//excel路径保存文件
         string excelpath;
         private int codeerr = 0;//验证码错误次数
-
+       private string pickurl = "";//挑入页面网址
         private bool clockstop = false;//定时关闭 true：停止 false：继续
 
         public BatchTiaoRuWindow(UserClass user)
@@ -73,6 +74,7 @@ namespace CRMPick
             xianzhi.Content = "*最多输入" + user.tiaoruresourcecount + "条资源!";
             this.ContentRendered += MLoad;
             this.webBrower.ObjectForScripting = new TiaoRuScriptEvent(this);
+            this.pickWebBrowser.ObjectForScripting = new TiaoRuPickScriptEvent(this);
         }
 
 
@@ -81,7 +83,7 @@ namespace CRMPick
         {
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
-
+            this.pickWebBrowser.LoadCompleted += new LoadCompletedEventHandler(Pickwebbrowser_LoadCompleted);
             if (!ExcelOperation.CheckExcelExist())
             {
                 //没有Excel
@@ -234,6 +236,37 @@ namespace CRMPick
 
 
         /// <summary>
+        /// 挑入网页加载完毕监听
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Pickwebbrowser_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+
+            string uri = pickWebBrowser.Source.ToString();
+            if (pickurl.IndexOf(uri) > -1)
+            {
+                //页面加载完毕执行挑入
+                IHTMLDocument2 pickdoc = (IHTMLDocument2)pickWebBrowser.Document;
+                IHTMLWindow2 pickwin = (IHTMLWindow2)pickdoc.parentWindow;
+                InjectJs inject = new InjectJs(this.pickWebBrowser);
+                Thread thr = new Thread(() =>
+                {
+                    //这里还可以处理些比较耗时的事情。
+                    Thread.Sleep(1000);//延时10秒
+                    this.Dispatcher.Invoke(new Action(() =>
+                    {
+                        pickwin.execScript(inject.getOverridePickInJs(), "javascript");
+                        pickwin.execScript("overrDoPick()", "javascript");
+                    }));
+                });
+                thr.Start();
+               
+            }
+        }
+
+
+        /// <summary>
         /// 开始查询按钮
         /// </summary>
         /// <param name="sender"></param>
@@ -270,7 +303,7 @@ namespace CRMPick
             }
 
 
-            //开始查询
+            //开始挑入
             if (CanOperation)
             {
                 //判断本页面是否创建excel，没有创建就创建
@@ -507,51 +540,72 @@ namespace CRMPick
         private void resourceRecord(string resource, AllCustomerOpportunityListItem item, int tag)
         {
             string result = "";
-            string globalId = "";
-            string orderArrived = "";
-            string type = "";
-            string saler = "";
-            string time = "";
-            string organization = "";
             switch (tag)
             {
                 case 0://没有资源
                     result = "没有搜索到这个资源";
+                    ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+                    result = null;
+                    Inquire();
                     break;
                 case 1://公司名称不符
                     result = "没有搜索到名称匹配资源";
+                    ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+                    result = null;
+                    Inquire();
                     break;
                 case 2://公海
-                    globalId = item.globalId;
-                    orderArrived = "未到单";
-                    type = "公海";
-                    time = item.gmtlastOperate;
-                    organization = "公海";
+                    this.Dispatcher.BeginInvoke((Action)(delegate ()
+                    {
+                        UsePickWebBrowser(item);
+                    }));
+                    
                     break;
                 case 3://仓库
-                    globalId = item.globalId;
-                    if (item.orderArrived.Equals("n"))
+                    if (XunHuanTiaoRuc)
                     {
-                        orderArrived = "未到单";
+                        this.Dispatcher.BeginInvoke((Action)(delegate ()
+                        {
+                            //将仓库中的资源添加到搜索列表中
+                            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r");
+                            if (!tbresousess.Equals(hint))
+                            {
+                                string[] companys = tbresousess.Split('\r');
+                                List<string> companylist = companys.ToList();
+                                companylist.Add(resource);
+                                tbresouses.Text = string.Join("\r", companylist.ToArray());
+                            }
+                            else
+                            {
+                                tbresouses.Text = resource;
+                            }
+                        }));
                     }
-                    else if (item.orderArrived.Equals("y"))
+                    else
                     {
-                        orderArrived = "已到单";
+                        result = "已在仓库";
+                        ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+                        result = null;
+                        Inquire();
                     }
-                    type = "仓库中";
-                    saler = item.ownerName;
-                    time = item.gmtlastOperate;
-                    organization = item.orgFullNamePath;
                     break;
             }
-            ExcelOperation.WriteToExcel(1, excelPath, resource, result, globalId, orderArrived, type, saler, time, organization);
-            result = null;
-            globalId = null;
-            orderArrived = null;
-            type = null;
-            saler = null;
-            time = null;
-            organization = null;
+        }
+
+        /// <summary>
+        /// 使用挑入窗口
+        /// </summary>
+        private void UsePickWebBrowser(AllCustomerOpportunityListItem item)
+        {
+             pickurl = "https://crm.alibaba-inc.com/noah/opportunity/pickInfo.cxul?globalId=" + item.encryptGlobalId + "&from=leads&source=recommendHide";
+            this.pickWebBrowser.Source = new Uri(pickurl);
+        }
+
+        /// <summary>
+        /// 循环挑入
+        /// </summary>
+        private void Inquire()
+        {
             Thread.Sleep(RandomTime());//延时
 
             this.Dispatcher.BeginInvoke((Action)(delegate ()
@@ -563,6 +617,66 @@ namespace CRMPick
                 }
             }));
         }
+
+
+
+        /// <summary>
+        /// 挑入结果
+        /// </summary>
+        /// <param name="tag">0:挑入成功</param>
+        public void DoPick(int tag)
+        {
+            Thread thr = new Thread(() =>
+            {
+                if (tag != 4 && tag != 5)
+                {
+                    this.Dispatcher.Invoke(new Action(() =>
+                    {
+                        Inquire();
+                    }));
+                }
+                string result = "";
+                //这里还可以处理些比较耗时的事情。
+                switch (tag)
+                {
+                    case 0://挑入成功
+                        result = "挑入成功";
+                        break;
+                    case 1://挑入的公司名重复，不可挑
+                        result = "挑入的公司名重复，不可挑";
+                        break;
+                    case 2://选择挑入机会
+                        result = "选择挑入机会";
+                        break;
+                    case 3://源介绍客户Id不能为空且必须在你名下
+                        result = "源介绍客户Id不能为空且必须在你名下";
+                        break;
+                    case 4://已达到仓库上限或者没有设置仓库上限
+                        break;
+                    case 5://已达到挑入上限,不能挑入
+                        break;
+                    case 6://该组中没有可用的sales
+                        break;
+                    case 7://挑入失败的机会
+                        break;
+                    case 8://提交成功，系统后台正在转移客户
+                        break;
+                    case 9://挑入失败，没有目标销售
+                        break;
+                    case 12://挑入机会不能为空，请检查机会是否正常后再试
+                        break;
+                    case 13://挑入失败,请检查库容或者机会是否正常后再试
+                        break;
+                    case 14://分发目标的库容已满
+                        break;
+                }
+                ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+
+            });
+            thr.Start();
+           
+        }
+
 
         /// <summary>
         /// 文本变化监听
@@ -583,6 +697,16 @@ namespace CRMPick
                     tbresouses.Text = string.Join("\r", companylist.ToArray());
                 }
             }
+        }
+
+        /// <summary>
+        /// 循环挑入按钮点击监听
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void XunHuanTiaoRu_Checked(object sender, RoutedEventArgs e)
+        {
+            XunHuanTiaoRuc = XunHuanTiaoRu.IsChecked == true ?  true: false;
         }
     }
 
@@ -605,10 +729,29 @@ namespace CRMPick
         {
             batchTiaoRuWindow.AnalyzeCompanyThead(tag, json);
         }
+    }
 
-        public void DoPick()
+
+    /// <summary>
+    /// js挑入调用C#类
+    /// </summary>
+    [System.Runtime.InteropServices.ComVisible(true)]
+    public class TiaoRuPickScriptEvent
+    {
+        private BatchTiaoRuWindow batchTiaoRuWindow;
+
+        public TiaoRuPickScriptEvent(BatchTiaoRuWindow batchTiaoRuWindow)
         {
+            this.batchTiaoRuWindow = batchTiaoRuWindow;
+        }
 
+        /// <summary>
+        /// 挑入结果
+        /// </summary>
+        /// <param name="tag"></param>
+        public void DoPick(int tag)
+        {
+            batchTiaoRuWindow.DoPick(tag);
         }
     }
 }

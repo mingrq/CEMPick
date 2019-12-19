@@ -73,8 +73,8 @@ namespace CRMPick
         private void UpdateUser(object sender, MouseButtonEventArgs e)
         {
             string teamname = team.Text;
-            string tiaorucount = tiaoruresourcecount.Text.Trim();
-            string gathercount = gatherresourcecount.Text.Trim();
+            string tiaorucount = tiaoruresourcecount.Text.Trim().Length > 9 ? "999999999" : tiaoruresourcecount.Text.Trim();
+            string gathercount = gatherresourcecount.Text.Trim().Length > 9 ? "999999999" : gatherresourcecount.Text.Trim();
             if (teamname.Equals(""))
             {
                 MessageBox.Show("请输入使用团队");
@@ -89,8 +89,8 @@ namespace CRMPick
                 user.team = teamname;
                 user.limited = limits;
                 user.username = (string)username.Content;
-                user.tiaoruresourcecount = int.Parse(tiaorucount);
-                user.gatherresourcecount = int.Parse(gathercount);
+                user.tiaoruresourcecount = long.Parse(tiaorucount) > 999999999 ? 999999999 : int.Parse(tiaorucount);
+                user.gatherresourcecount = long.Parse(gathercount) > 999999999 ? 999999999 : int.Parse(gathercount);
                 MysqlUtil mySql = new MysqlUtil();
                 bool isupdate = mySql.updateUser(user);
                 if (isupdate)

@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Net;
 using System.Management;
 using System.Configuration;
-using DcVerCode;
 using System.Windows.Media;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -35,8 +34,8 @@ namespace CRMPick.Utils
             Clipboard.Clear();
             rang.execCommand("Copy", true, null);
             BitmapSource bitmap = Clipboard.GetImage();
-            Clipboard.Clear();
             byte[] dcimg = ConvertToBytes(bitmap);//验证码字节码
+            Clipboard.Clear();
             string result = Dc.RecByte_A(dcimg, dcimg.Length, ConfigurationManager.AppSettings["chaorenuser"], ConfigurationManager.AppSettings["chaorenpw"], ConfigurationManager.AppSettings["softid"]);
             string verificationCode =result.Substring(0, result.IndexOf("|!|"));
             return verificationCode;
