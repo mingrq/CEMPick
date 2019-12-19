@@ -605,5 +605,10 @@ namespace CRMPick
         {
             batchTiaoRuWindow.AnalyzeCompanyThead(tag, json);
         }
+
+        public void DoPick()
+        {
+
+        }
     }
 }

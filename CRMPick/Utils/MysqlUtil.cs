@@ -190,9 +190,9 @@ namespace CRMPick.Utils
                 user.facility = reader.GetString("facility");
                 user.facilitytwo = reader.GetString("facilitytwo");
                 user.limited = reader.GetString("limited");
-                user.logincount = reader.GetInt16("logincount");
-                user.gatherresourcecount = reader.GetInt16("gatherresourcecount");
-                user.tiaoruresourcecount = reader.GetInt16("tiaoruresourcecount");
+                user.logincount = reader.GetInt32("logincount");
+                user.gatherresourcecount = reader.GetInt32("gatherresourcecount");
+                user.tiaoruresourcecount = reader.GetInt32("tiaoruresourcecount");
                 users.Add(user);
             }
             return users;

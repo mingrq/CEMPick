@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,10 +43,19 @@ namespace CRMPick
 
         private void WinLoaded(object sender, EventArgs e)
         {
-            MysqlUtil mysqlUtil = new MysqlUtil();
-            List<UserClass> users = mysqlUtil.getUserList();
-            list.ItemsSource = users;
             this.Topmost = false;
+            Thread thr = new Thread(() =>
+            {
+                //这里还可以处理些比较耗时的事情。
+                MysqlUtil mysqlUtil = new MysqlUtil();
+                List<UserClass> users = mysqlUtil.getUserList();
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    list.ItemsSource = null;
+                    list.ItemsSource = users;
+                }));
+            });
+            thr.Start();
         }
 
         /// <summary>
@@ -143,10 +153,18 @@ namespace CRMPick
 
         public void resh()
         {
-            MysqlUtil mysqlUtil = new MysqlUtil();
-            List<UserClass> users = mysqlUtil.getUserList();
-            list.ItemsSource = null;
-            list.ItemsSource = users;
+            Thread thr = new Thread(() =>
+            {
+                //这里还可以处理些比较耗时的事情。
+                MysqlUtil mysqlUtil = new MysqlUtil();
+                List<UserClass> users = mysqlUtil.getUserList();
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    list.ItemsSource = null;
+                    list.ItemsSource = users;
+                }));
+            });
+            thr.Start();
         }
 
         /// <summary>
