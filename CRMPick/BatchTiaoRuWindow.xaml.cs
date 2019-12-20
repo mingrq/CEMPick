@@ -26,7 +26,7 @@ namespace CRMPick
     /// </summary>
     public partial class BatchTiaoRuWindow : Window
     {
-        private bool XunHuanTiaoRuc=false;//是否循环挑入
+        private bool XunHuanTiaoRuc = false;//是否循环挑入
         private bool CanOperation = false;//可以操作
         private bool CanPick = false;//可以操作
         private int startss = 10000;//开始间隔毫秒
@@ -41,7 +41,7 @@ namespace CRMPick
         private string filesavepath = Directory.GetCurrentDirectory() + "\\excelpath.txt";//excel路径保存文件
         string excelpath;
         private int codeerr = 0;//验证码错误次数
-       private string pickurl = "";//挑入页面网址
+        private string pickurl = "";//挑入页面网址
         private bool clockstop = false;//定时关闭 true：停止 false：继续
 
         public BatchTiaoRuWindow(UserClass user)
@@ -261,7 +261,7 @@ namespace CRMPick
                     }));
                 });
                 thr.Start();
-               
+
             }
         }
 
@@ -559,7 +559,7 @@ namespace CRMPick
                     {
                         UsePickWebBrowser(item);
                     }));
-                    
+
                     break;
                 case 3://仓库
                     if (XunHuanTiaoRuc)
@@ -597,7 +597,7 @@ namespace CRMPick
         /// </summary>
         private void UsePickWebBrowser(AllCustomerOpportunityListItem item)
         {
-             pickurl = "https://crm.alibaba-inc.com/noah/opportunity/pickInfo.cxul?globalId=" + item.encryptGlobalId + "&from=leads&source=recommendHide";
+            pickurl = "https://crm.alibaba-inc.com/noah/opportunity/pickInfo.cxul?globalId=" + item.encryptGlobalId + "&from=leads&source=recommendHide";
             this.pickWebBrowser.Source = new Uri(pickurl);
         }
 
@@ -623,22 +623,35 @@ namespace CRMPick
         /// <summary>
         /// 挑入结果
         /// </summary>
-        /// <param name="tag">0:挑入成功</param>
+        /// <param name="tag">
+        /////   0:挑入成功
+        ////    1:挑入的公司名重复，不可挑
+        ////    2:选择挑入机会
+        ////    3:源介绍客户Id不能为空且必须在你名下
+        ////    4:已达到仓库上限或者没有设置仓库上限
+        ////    6:该组中没有可用的sales
+        ////    7:挑入失败的机会
+        ////    8:提交成功，系统后台正在转移客户
+        ////    9:挑入失败，没有目标销售
+        ////    12:挑入机会不能为空，请检查机会是否正常后再试
+        ////    13:挑入失败,请检查库容或者机会是否正常后再试
+        ////    14:分发目标的库容已满
+        /// </param>
         public void DoPick(int tag)
         {
             Thread thr = new Thread(() =>
             {
-                if (tag != 4 && tag != 5)
-                {
-                    this.Dispatcher.Invoke(new Action(() =>
-                    {
-                        Inquire();
-                    }));
-                }
                 string result = "";
                 //这里还可以处理些比较耗时的事情。
                 switch (tag)
                 {
+                    case 4://已达到仓库上限或者没有设置仓库上限
+                    case 5://已达到挑入上限,不能挑入
+                        this.Dispatcher.Invoke(new Action(() =>
+                        {
+                            MessageBox.Show("已达到挑入上限!");
+                        }));
+                        return;
                     case 0://挑入成功
                         result = "挑入成功";
                         break;
@@ -651,30 +664,35 @@ namespace CRMPick
                     case 3://源介绍客户Id不能为空且必须在你名下
                         result = "源介绍客户Id不能为空且必须在你名下";
                         break;
-                    case 4://已达到仓库上限或者没有设置仓库上限
-                        break;
-                    case 5://已达到挑入上限,不能挑入
-                        break;
                     case 6://该组中没有可用的sales
+                        result = "该组中没有可用的sales";
                         break;
                     case 7://挑入失败的机会
+                        result = "挑入失败的机会";
                         break;
                     case 8://提交成功，系统后台正在转移客户
+                        result = "提交成功，系统后台正在转移客户";
                         break;
                     case 9://挑入失败，没有目标销售
+                        result = "挑入失败，没有目标销售";
                         break;
                     case 12://挑入机会不能为空，请检查机会是否正常后再试
+                        result = "挑入机会不能为空，请检查机会是否正常后再试";
                         break;
                     case 13://挑入失败,请检查库容或者机会是否正常后再试
+                        result = "挑入失败,请检查库容或者机会是否正常后再试";
                         break;
                     case 14://分发目标的库容已满
+                        result = "分发目标的库容已满";
                         break;
                 }
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    Inquire();
+                }));
                 ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
-
             });
             thr.Start();
-           
         }
 
 
@@ -706,7 +724,17 @@ namespace CRMPick
         /// <param name="e"></param>
         private void XunHuanTiaoRu_Checked(object sender, RoutedEventArgs e)
         {
-            XunHuanTiaoRuc = XunHuanTiaoRu.IsChecked == true ?  true: false;
+            XunHuanTiaoRuc = XunHuanTiaoRu.IsChecked == true ? true : false;
+        }
+
+        /// <summary>
+        /// 定时启动按钮点击事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
