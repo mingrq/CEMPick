@@ -75,14 +75,21 @@ namespace CRMPick.Utils
                 workSheet.Cells[1, 1] = "公司名称";
                 workSheet.Cells[1, 2] = "挑入结果";
             }
-            
-            workBook.SaveAs(dir);
-            workBook.Close(false, Missing.Value, Missing.Value);
-            excelApp.Quit();
-            workSheet = null;
-            workBook = null;
-            excelApp = null;
-            GC.Collect();
+            try
+            {
+                workBook.SaveAs(dir);
+                workBook.Close(false, Missing.Value, Missing.Value);
+                excelApp.Quit();
+                workSheet = null;
+                workBook = null;
+                excelApp = null;
+                GC.Collect();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+           
             return dir;
         }
 
@@ -121,11 +128,18 @@ namespace CRMPick.Utils
                 mysheet.Cells[maxrow, 7] = time;
                 mysheet.Cells[maxrow, 8] = organization;
             }
-            mybook.Save();
-            mybook.Close(false, Missing.Value, Missing.Value);
-            mybook = null;
-            //quit excel app
-            app.Quit();
+            try
+            {
+                mybook.Save();
+                mybook.Close(false, Missing.Value, Missing.Value);
+                mybook = null;
+                //quit excel app
+                app.Quit();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
         }
     }

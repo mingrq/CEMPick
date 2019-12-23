@@ -82,12 +82,12 @@
                             <DatePicker  x:Name="dateover" VerticalContentAlignment="Center" Width="100" Height="30"/>
                             <local1:TimeSpanPicker  Margin="10,0,0,0"  Height="28" Width="120" x:Name="timePickerover"  />
                         </StackPanel>
-                        <Button HorizontalAlignment="Left" Width="100" Height="30" Margin="0,10,0,0" Content="定时挑入" Padding="14,4" Click="Button_Click_1"/>
+                        <Button x:Name="tingshiqidongbtn" HorizontalAlignment="Left" Width="100" Height="30" Margin="0,10,0,0" Content="定时挑入" Padding="14,4" Click="Button_Click_1"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
             <StackPanel  Grid.Row="7" Background="Blue">
-                <WebBrowser Width="350" Height="200" x:Name="pickWebBrowser"/>
+                <WebBrowser Width="0" Height="0" x:Name="pickWebBrowser"/>
             </StackPanel>
             
         </Grid>

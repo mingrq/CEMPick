@@ -4,6 +4,7 @@ using mshtml;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -118,7 +119,7 @@ namespace CRMPick
         private string getNextCompanyName()
         {
             string firstcompany = "";
-            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r");
+            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").Replace("\r\r", "\r").TrimEnd('\r');
             if (!tbresousess.Equals(hint))
             {
                 string[] companys = tbresousess.Split('\r');
@@ -127,7 +128,6 @@ namespace CRMPick
                 List<string> companylist = companys.ToList();
                 companylist.RemoveAt(0);
                 tbresouses.Text = string.Join("\r", companylist.ToArray());
-
             }
             resource = firstcompany;
             return firstcompany;
@@ -273,12 +273,27 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (examineCan())
+            {
+                clockstop = false;
+                reshUi(0);
+                InquireCompany();
+            }
+        }
+
+
+
+        /// <summary>
+        /// 检查是否可以挑入
+        /// </summary>
+        private bool examineCan()
+        {
             //获取excel放置位置
             excelpath = pathTb.Text.Trim();
             if (excelpath.Equals(""))
             {
                 MessageBox.Show("请设置文件保存路径!");
-                return;
+                return false;
             }
 
             //保存设置的文件路径
@@ -289,20 +304,18 @@ namespace CRMPick
             if (starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
             {
                 MessageBox.Show("请输入最小秒数");
-                return;
+                return false;
             }
             else if (!starts.Text.Trim().Equals("") && ends.Text.Trim().Equals(""))
             {
                 MessageBox.Show("请输入最大秒数");
-                return;
+                return false;
             }
             else if (!starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
             {
                 startss = int.Parse(starts.Text) * 1000;
                 endss = int.Parse(ends.Text) * 1000;
             }
-
-
             //开始挑入
             if (CanOperation)
             {
@@ -313,25 +326,27 @@ namespace CRMPick
                 }
                 if (!excelPath.Equals(""))
                 {
-                    string tbresousess = tbresouses.Text.Trim();
+                    string tbresousess = tbresouses.Text.TrimEnd('\r').Trim();
                     if (tbresousess.Equals("") || tbresousess.Equals(hint))
                     {
                         MessageBox.Show("没有资源了");
+                        return false;
                     }
                     else
                     {
-                        reshUi(0);
-                        InquireCompany();
+                        return true;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Excel创建失败!");
+                    return false;
                 }
             }
             else
             {
                 MessageBox.Show("页面不正确，无法进行操作");
+                return false;
             }
         }
 
@@ -374,6 +389,11 @@ namespace CRMPick
                 ends.IsEnabled = false;
                 pathTb.IsEnabled = false;
                 pathsele.IsEnabled = false;
+                datestart.IsEnabled = false;
+                timePickerstart.IsEnabled = false;
+                dateover.IsEnabled = false;
+                timePickerover.IsEnabled = false;
+                tingshiqidongbtn.IsEnabled = false;
             }
             else
             {
@@ -382,6 +402,16 @@ namespace CRMPick
                 startBtn.IsEnabled = true;
                 starts.IsEnabled = true;
                 ends.IsEnabled = true;
+                datestart.IsEnabled = true;
+                timePickerstart.IsEnabled = true;
+                dateover.IsEnabled = true;
+                timePickerover.IsEnabled = true;
+                tingshiqidongbtn.IsEnabled = true;
+                //关闭定时关闭线程
+                if (thrStop != null)
+                {
+                    thrStop.Abort();
+                }
             }
         }
 
@@ -567,7 +597,7 @@ namespace CRMPick
                         this.Dispatcher.BeginInvoke((Action)(delegate ()
                         {
                             //将仓库中的资源添加到搜索列表中
-                            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r");
+                            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").TrimEnd('\r');
                             if (!tbresousess.Equals(hint))
                             {
                                 string[] companys = tbresousess.Split('\r');
@@ -586,8 +616,8 @@ namespace CRMPick
                         result = "已在仓库";
                         ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
                         result = null;
-                        Inquire();
                     }
+                    Inquire();
                     break;
             }
         }
@@ -614,6 +644,11 @@ namespace CRMPick
                 if (!clockstop)
                 {
                     InquireCompany();//循环
+                }
+                else
+                {
+                    MessageBox.Show("结束挑入");
+                    reshUi(1);
                 }
             }));
         }
@@ -649,6 +684,7 @@ namespace CRMPick
                     case 5://已达到挑入上限,不能挑入
                         this.Dispatcher.Invoke(new Action(() =>
                         {
+                            reshUi(1);
                             MessageBox.Show("已达到挑入上限!");
                         }));
                         return;
@@ -686,10 +722,7 @@ namespace CRMPick
                         result = "分发目标的库容已满";
                         break;
                 }
-                this.Dispatcher.Invoke(new Action(() =>
-                {
                     Inquire();
-                }));
                 ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
             });
             thr.Start();
@@ -727,6 +760,7 @@ namespace CRMPick
             XunHuanTiaoRuc = XunHuanTiaoRu.IsChecked == true ? true : false;
         }
 
+
         /// <summary>
         /// 定时启动按钮点击事件
         /// </summary>
@@ -734,7 +768,80 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            clockstop = false;
+            if (examineCan())
+            {
+                string datestart = this.datestart.SelectedDate.ToString();//开始时间
+                if (datestart == null || datestart.Equals(""))
+                {
+                    MessageBox.Show("请设置日期！！");
+                    return;
+                }
+                else
+                {
+                    string dateStartString = this.datestart.SelectedDate.ToString().Substring(0, this.datestart.SelectedDate.ToString().IndexOf(' ')) + " " + timePickerstart.TimeSpan;
+                    long settime = GetTimeString.getSetTime(dateStartString);
+                    long nowtime = GetTimeString.getNowTime();
+                    if ((settime - nowtime).ToString().Length > 9)
+                    {
+                        MessageBox.Show("设置时间太长！！");
+                        return;
+                    }
+                    int tim = (int)(settime - nowtime);
+                    if (tim > 0)
+                    {
+                        reshUi(0);//调整ui
+                                  //开启倒计时
+                        Thread thr = new Thread(() =>
+                         {
+                             Thread.Sleep(tim);
+                             this.Dispatcher.Invoke(new Action(() =>
+                             {
 
+                                 InquireCompany();
+                                 timingStop();
+
+                             }));
+                         });
+                        thr.Start();
+                    }
+                    else
+                    {
+                        MessageBox.Show("设置的时间已经过去了！！");
+                    }
+                }
+            }
+        }
+
+
+        Thread thrStop;
+        /// <summary>
+        /// 开启定时关闭线程
+        /// </summary>
+        private void timingStop()
+        {
+            string dateend = dateover.SelectedDate.ToString();//结束时间
+            string dateOverString = this.dateover.SelectedDate.ToString().Substring(0, this.dateover.SelectedDate.ToString().IndexOf(' ')) + " " + timePickerover.TimeSpan;                                 //存在结束时间
+            if (dateend != null && !dateend.Equals(""))
+            {
+                thrStop = new Thread(() =>
+                {
+                    long settime = GetTimeString.getSetTime(dateOverString);
+                    long nowtime = GetTimeString.getNowTime();
+                    int tim;
+                    if ((settime - nowtime).ToString().Length > 9)
+                    {
+                        tim = 999999999;
+                    }
+                    else
+                    {
+                        tim = (int)(settime - nowtime);
+                    }
+                    Thread.Sleep(tim);
+                    clockstop = true;
+                });
+                thrStop.Start();
+            }
         }
     }
 
