@@ -112,7 +112,7 @@ namespace CRMPick
         private string getNextCompanyName()
         {
             string firstcompany = "";
-            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r");
+            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").TrimEnd('\r');
             if (!tbresousess.Equals(hint))
             {
                 string[] companys = tbresousess.Split('\r');
