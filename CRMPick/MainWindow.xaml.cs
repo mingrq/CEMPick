@@ -75,7 +75,7 @@ namespace CRMPick
             ALCRMWindow aLCRMWindow = new ALCRMWindow();
             aLCRMWindow.Topmost = true;
             aLCRMWindow.Show();
-
+            this.Close();
         }
 
         private void BatchTiaoRuOnClick(object sender, MouseButtonEventArgs e)
@@ -83,6 +83,7 @@ namespace CRMPick
             BatchTiaoRuWindow batchTiaoRuWindow = new BatchTiaoRuWindow(user);
             batchTiaoRuWindow.Topmost = true;
             batchTiaoRuWindow.Show();
+            this.Close();
         }
 
         private void BatchChaxunOnClick(object sender, MouseButtonEventArgs e)
@@ -90,6 +91,7 @@ namespace CRMPick
             BatchChaxunWindow batchChaxunWindow = new BatchChaxunWindow(user);
             batchChaxunWindow.Topmost = true;
             batchChaxunWindow.Show();
+            this.Close();
         }
 
         private void UserPWUpdateOnClick(object sender, MouseButtonEventArgs e)

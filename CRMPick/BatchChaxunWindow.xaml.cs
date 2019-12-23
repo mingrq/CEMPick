@@ -42,6 +42,8 @@ namespace CRMPick
         public BatchChaxunWindow(UserClass user)
         {
             InitializeComponent();
+            DeleteCookies deleteCookies = new DeleteCookies();
+            deleteCookies.SuppressWininetBehavior();
             if (File.Exists(filesavepath))
             {
                 //账号信息文件存在
