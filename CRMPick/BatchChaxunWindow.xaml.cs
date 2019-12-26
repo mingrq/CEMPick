@@ -313,15 +313,7 @@ namespace CRMPick
             fs.Close();
         }
 
-        /// <summary>
-        /// 获取验证码结果
-        /// </summary>
-        private string getimgcheckcode()
-        {
-            CacheImage cacheImage = new CacheImage();
-            string code = cacheImage.GetCacheImage(webBrower, "imgcheckcode");
-            return code;
-        }
+      
 
         /// <summary>
         /// 调整ui
@@ -476,7 +468,14 @@ namespace CRMPick
         /// </summary>
         private void verfiyCode()
         {
-            win.execScript("$('#textcheckcode').val('" + getimgcheckcode() + "');", "javascript");//将打码后的验证码添加到输入框
+            CacheImage cacheImage = new CacheImage();
+            CacheImage.MyDelegate myDelegate = new CacheImage.MyDelegate(imgcheckCode);
+            cacheImage.GetCacheImage(webBrower, "imgcheckcode", myDelegate,this);
+        }
+
+        public void imgcheckCode(string verificationCode)
+        {
+            win.execScript("$('#textcheckcode').val('" + verificationCode + "');", "javascript");//将打码后的验证码添加到输入框
             win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
         }
 

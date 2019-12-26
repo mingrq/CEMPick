@@ -48,6 +48,9 @@ namespace CRMPick
         public BatchTiaoRuWindow(UserClass user)
         {
             InitializeComponent();
+            //清除cookies
+            DeleteCookies deleteCookies = new DeleteCookies();
+            deleteCookies.SuppressWininetBehavior();
             if (File.Exists(filesavepath))
             {
                 //账号信息文件存在
@@ -257,6 +260,8 @@ namespace CRMPick
                     this.Dispatcher.Invoke(new Action(() =>
                     {
                         pickwin.execScript(inject.getOverridePickInJs(), "javascript");
+                        pickwin.execScript("_shy_.alert_close();", "javascript");//关闭弹窗JS
+                        pickwin.execScript("selectOpp.getWidget('').select(0,true);", "javascript");
                         pickwin.execScript("overrDoPick()", "javascript");
                     }));
                 });
@@ -365,15 +370,7 @@ namespace CRMPick
         }
 
 
-        /// <summary>
-        /// 获取验证码结果
-        /// </summary>
-        private string getimgcheckcode()
-        {
-            CacheImage cacheImage = new CacheImage();
-            string code = cacheImage.GetCacheImage(webBrower, "imgcheckcode");
-            return code;
-        }
+        
 
         /// <summary>
         /// 调整ui
@@ -538,14 +535,24 @@ namespace CRMPick
             }
         }
 
+
+
         /// <summary>
         /// 需要验证码，打码
         /// </summary>
         private void verfiyCode()
         {
-            win.execScript("$('#textcheckcode').val('" + getimgcheckcode() + "');", "javascript");//将打码后的验证码添加到输入框
+            CacheImage cacheImage = new CacheImage();
+            CacheImage.MyDelegate myDelegate = new CacheImage.MyDelegate(imgcheckCode);
+            cacheImage.GetCacheImage(webBrower, "imgcheckcode", myDelegate,this);
+        }
+
+        public void imgcheckCode(string verificationCode)
+        {
+            win.execScript("$('#textcheckcode').val('" + verificationCode + "');", "javascript");//将打码后的验证码添加到输入框
             win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
         }
+
 
         /// <summary>
         /// 选择文件夹路径按钮

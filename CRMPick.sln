@@ -7,24 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMPick", "CRMPick\CRMPick.
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Release|Any CPU = Release|Any CPU
-		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Debug|x64.ActiveCfg = Debug|x64
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Debug|x64.Build.0 = Debug|x64
 		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Debug|x86.ActiveCfg = Debug|x86
 		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Debug|x86.Build.0 = Debug|x86
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Release|x64.ActiveCfg = Release|x64
-		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Release|x64.Build.0 = Release|x64
 		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Release|x86.ActiveCfg = Release|x86
 		{DF7EBCFD-7C72-430A-9901-A8FEC7024205}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection

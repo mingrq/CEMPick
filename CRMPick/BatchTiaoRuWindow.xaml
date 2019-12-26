@@ -86,9 +86,8 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
-            <StackPanel  Grid.Row="7" Background="Blue">
-                <WebBrowser Width="0" Height="0" x:Name="pickWebBrowser"/>
-            </StackPanel>
+                <WebBrowser Grid.Row="7" Margin="0,50,0,0" Width="300" Height="300" x:Name="pickWebBrowser"/>
+            
             
         </Grid>
     </Grid>

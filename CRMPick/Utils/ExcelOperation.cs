@@ -17,10 +17,17 @@ namespace CRMPick.Utils
         public static bool CheckExcelExist()
         {
             bool isExist = false;
-            Application excelApp = new Application();
-            if (excelApp != null)
+            try
             {
-                isExist = true;
+                Application excelApp = new Application();
+                if (excelApp != null)
+                {
+                    isExist = true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
             return isExist;
         }
