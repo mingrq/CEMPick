@@ -23,7 +23,8 @@ namespace CRMPick
         public ALCRMWindow()
         {
             InitializeComponent();
-            //webBrower.Source = new Uri("https://pin.aliyun.com/get_img?identity=caenir.alibaba-inc.com&sessionid=k0Ig5XK02mr2iNsIMcdjs5gUDnfigit+IDUY+GT/Bn32Q=");
+            DeleteCookies deleteCookies = new DeleteCookies();
+            deleteCookies.SuppressWininetBehavior();
             this.ContentRendered += MLoad;
         }
 
