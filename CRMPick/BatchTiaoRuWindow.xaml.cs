@@ -44,6 +44,7 @@ namespace CRMPick
         private int codeerr = 0;//验证码错误次数
         private string pickurl = "";//挑入页面网址
         private bool clockstop = false;//定时关闭 true：停止 false：继续
+        private bool pausestop = false;//定时关闭 true：停止 false：继续
 
         public BatchTiaoRuWindow(UserClass user)
         {
@@ -281,6 +282,7 @@ namespace CRMPick
             if (examineCan())
             {
                 clockstop = false;
+                pausestop = false;
                 reshUi(0);
                 InquireCompany();
             }
@@ -382,6 +384,7 @@ namespace CRMPick
                 //正在查询
                 startBtn.Content = "正在挑入";
                 startBtn.IsEnabled = false;
+                startBtn.Visibility = Visibility.Collapsed;
                 starts.IsEnabled = false;
                 ends.IsEnabled = false;
                 pathTb.IsEnabled = false;
@@ -391,12 +394,14 @@ namespace CRMPick
                 dateover.IsEnabled = false;
                 timePickerover.IsEnabled = false;
                 tingshiqidongbtn.IsEnabled = false;
+                pauseBtn.Visibility = Visibility.Visible;
             }
             else
             {
                 //未开始查询
                 startBtn.Content = "开始挑入";
                 startBtn.IsEnabled = true;
+                startBtn.Visibility = Visibility.Visible;
                 starts.IsEnabled = true;
                 ends.IsEnabled = true;
                 datestart.IsEnabled = true;
@@ -404,6 +409,7 @@ namespace CRMPick
                 dateover.IsEnabled = true;
                 timePickerover.IsEnabled = true;
                 tingshiqidongbtn.IsEnabled = true;
+                pauseBtn.Visibility = Visibility.Collapsed;
                 //关闭定时关闭线程
                 if (thrStop != null)
                 {
@@ -411,6 +417,40 @@ namespace CRMPick
                 }
             }
         }
+
+        /// <summary>
+        /// 暂停调整ui
+        /// </summary>
+        private void pauseReshUi()
+        {
+            startBtn.Content = "继续挑入";
+            startBtn.IsEnabled = true;
+            startBtn.Visibility = Visibility.Visible;
+            pauseBtn.Visibility = Visibility.Collapsed;
+        }
+
+
+        /// <summary>
+        /// 暂停
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Pause_Click(object sender, RoutedEventArgs e)
+        {
+            pausestop = true;
+            MessageBox.Show("暂停");
+            Thread thr = new Thread(() =>
+            {
+                //这里还可以处理些比较耗时的事情。
+                Thread.Sleep(2000);//延时2秒
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    pauseReshUi();
+                }));
+            });
+            thr.Start();
+        }
+
 
         /// <summary>
         /// 开启子线程操作查询数据
@@ -441,7 +481,9 @@ namespace CRMPick
         {
             string json = (string)jsons;
             Console.WriteLine(json);
-            CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
+            try
+            {
+                CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
             string err = customer.errorMsg;//搜索错误信息
             //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
 
@@ -532,6 +574,20 @@ namespace CRMPick
                     resourceNameDifferentCount = 0;
                     SeaCustomerOpportunityList = null;
                 }
+            }
+
+            }
+            catch (Exception e)
+            {
+                string errorFiler = Directory.GetCurrentDirectory() + "\\errorlog.txt";//用户账号保存文件
+
+                FileStream fs = new FileStream(errorFiler, FileMode.OpenOrCreate);
+                StreamWriter sw = new StreamWriter(fs);
+
+                sw.WriteLine(json + "\n" + e.ToString());
+                sw.Close();
+                fs.Close();
+                MessageBox.Show("提示:阿里数据格式改变，请联系研发部！！");
             }
         }
 
@@ -648,11 +704,11 @@ namespace CRMPick
             this.Dispatcher.BeginInvoke((Action)(delegate ()
             {
                 //要执行的方法
-                if (!clockstop)
+                if (!clockstop && !pausestop)
                 {
                     InquireCompany();//循环
                 }
-                else
+                if (clockstop)
                 {
                     MessageBox.Show("结束挑入");
                     reshUi(1);
@@ -776,6 +832,7 @@ namespace CRMPick
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             clockstop = false;
+            pausestop = false;
             if (examineCan())
             {
                 string datestart = this.datestart.SelectedDate.ToString();//开始时间

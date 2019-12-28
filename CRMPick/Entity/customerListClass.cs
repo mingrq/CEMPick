@@ -8,48 +8,114 @@ namespace CRMPick.Entity
 {
    
 
-    public class CustomerListClass
+
+    //如果好用，请收藏地址，帮忙分享。
+    public class MemberIndaysListItem
     {
         /// <summary>
         /// 
         /// </summary>
-        public int memberIndaysCount { get; set; }
+        public int pageCount { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string leadExceedFlag { get; set; }
+        public string orderByAsc { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public List<string> memberIndaysList { get; set; }
+        public string orderBy { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string errorMsg { get; set; }
+        public string gmtCreate { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string errorFlag { get; set; }
+        public string nickName { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string memberExceedFlag { get; set; }
+        public string gmtCreateStr { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public int allCustomerOpportunityCount { get; set; }
+        public string name { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public List<string> allCustomerLeadList { get; set; }
+        public int pageStart { get; set; }
+        /// <summary>
+        /// 河北
+        /// </summary>
+        public string province { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public int allCustomerLeadCount { get; set; }
+        public string memberId { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public List<AllCustomerOpportunityListItem> allCustomerOpportunityList { get; set; }
+        public string searchType { get; set; }
+        /// <summary>
+        /// 衡水赞程伟业精密机械制造有限公司
+        /// </summary>
+        public string companyName { get; set; }
+        /// <summary>
+        /// 石家庄
+        /// </summary>
+        public string city { get; set; }
+    }
+
+    public class AllCustomerLeadListItem
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string phone { get; set; }
+        /// <summary>
+        /// 梁红强
+        /// </summary>
+        public string applyName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string fax { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string status { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string email { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string nickName { get; set; }
+        /// <summary>
+        /// 河北
+        /// </summary>
+        public string province { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string memberId { get; set; }
+        /// <summary>
+        /// 定州市宇强体育用品厂
+        /// </summary>
+        public string companyName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string mobile { get; set; }
+        /// <summary>
+        /// 保定
+        /// </summary>
+        public string city { get; set; }
     }
 
     public class AllCustomerOpportunityListItem
@@ -123,7 +189,7 @@ namespace CRMPick.Entity
         /// </summary>
         public string isTp { get; set; }
         /// <summary>
-        /// /Alibaba/诚信通/销售/渠道销售部/渠道/渠道华北大区/京津冀区/北京渠道/党A组/河北驰业网络科技有限公司
+        /// /Alibaba/诚信通/销售/渠道销售部/渠道/渠道华北大区/京津冀区/北京渠道/党L组/河北驰业网络科技有限公司衡水市冀州区分公司
         /// </summary>
         public string orgFullNamePath { get; set; }
         /// <summary>
@@ -147,7 +213,7 @@ namespace CRMPick.Entity
         /// </summary>
         public string opportunityId { get; set; }
         /// <summary>
-        /// 驰业网络沧州
+        /// 张洁
         /// </summary>
         public string ownerName { get; set; }
         /// <summary>
@@ -167,7 +233,7 @@ namespace CRMPick.Entity
         /// </summary>
         public string ownerAlitalkStatus { get; set; }
         /// <summary>
-        /// 廊坊阿米巴建材有限公司
+        /// 衡水赞程伟业精密机械制造有限公司
         /// </summary>
         public string companyName { get; set; }
         /// <summary>
@@ -182,5 +248,49 @@ namespace CRMPick.Entity
         /// 
         /// </summary>
         public string memberId { get; set; }
+    }
+
+    public class CustomerListClass
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public int memberIndaysCount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string leadExceedFlag { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<MemberIndaysListItem> memberIndaysList { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string errorMsg { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string errorFlag { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string memberExceedFlag { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int allCustomerOpportunityCount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<AllCustomerLeadListItem> allCustomerLeadList { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int allCustomerLeadCount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<AllCustomerOpportunityListItem> allCustomerOpportunityList { get; set; }
     }
 }

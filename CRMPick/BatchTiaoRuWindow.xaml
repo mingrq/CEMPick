@@ -66,7 +66,10 @@
                 <Label Content="~" FontSize="10" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="ends" Width="50" VerticalContentAlignment="Center"/>
                 <Label Content="秒" FontSize="10" VerticalContentAlignment="Center"/>
-                <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始挑入" Click="Button_Click"/>
+                <Canvas>
+                    <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始挑入" Click="Button_Click"/>
+                    <Button x:Name="pauseBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="暂停挑入" Click="Button_Pause_Click" Visibility="Collapsed"/>
+                </Canvas>
             </StackPanel>
             <CheckBox x:Name="XunHuanTiaoRu"  Grid.Row="5" Margin="20,14,0,0" Content="循环挑入" Click="XunHuanTiaoRu_Checked"/>
             <StackPanel Grid.Row="6" Margin="20,14,20,0" Orientation="Vertical">

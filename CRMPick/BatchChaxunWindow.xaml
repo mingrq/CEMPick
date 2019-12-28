@@ -38,7 +38,10 @@
                 <Label Content="~" FontSize="10" VerticalContentAlignment="Center"/>
                 <TextBox x:Name="ends" Width="50" VerticalContentAlignment="Center"/>
                 <Label Content="秒" FontSize="10" VerticalContentAlignment="Center"/>
-                <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始采集" Click="Button_Click"/>
+                <Canvas>
+                    <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始采集" Click="Button_Click"/>
+                    <Button x:Name="pauseBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="暂停采集" Click="Button_Pause_Click" Visibility="Collapsed"/>
+                </Canvas>
             </StackPanel>
         </Grid>
     </Grid>
