@@ -11,6 +11,7 @@ using System.Management;
 using System.Windows.Navigation;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace CRMPick
 {
@@ -19,6 +20,14 @@ namespace CRMPick
     /// </summary>
     public partial class ALCRMWindow : Window
     {
+        [DllImport("KERNEL32.DLL", EntryPoint = "SetProcessWorkingSetSize", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool SetProcessWorkingSetSize(IntPtr pProcess, int dwMinimumWorkingSetSize, int dwMaximumWorkingSetSize);
+
+        [DllImport("KERNEL32.DLL", EntryPoint = "GetCurrentProcess", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr GetCurrentProcess();
+
+
+
         private bool CanOperation = false;//可以操作
         public ALCRMWindow()
         {
@@ -76,6 +85,9 @@ namespace CRMPick
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            IntPtr pHandle = GetCurrentProcess();
+            SetProcessWorkingSetSize(pHandle, -1, -1);
+
             if (CanOperation)
             {
                 string company = getNextCompanyName();
