@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,14 +26,6 @@ namespace CRMPick
     /// </summary>
     public partial class BatchChaxunWindow : Window
     {
-        [DllImport("KERNEL32.DLL", EntryPoint = "SetProcessWorkingSetSize", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        internal static extern bool SetProcessWorkingSetSize(IntPtr pProcess, int dwMinimumWorkingSetSize, int dwMaximumWorkingSetSize);
-
-        [DllImport("KERNEL32.DLL", EntryPoint = "GetCurrentProcess", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr GetCurrentProcess();
-
-
-
         private bool CanOperation = false;//可以操作
         private int startss = 10000;//开始间隔毫秒
         private int endss = 20000;//结束间隔毫秒
@@ -144,8 +135,6 @@ namespace CRMPick
         /// </summary>
         private void InquireCompany()
         {
-            IntPtr pHandle = GetCurrentProcess();
-            SetProcessWorkingSetSize(pHandle, -1, -1);
             string company = getNextCompanyName();
             if (company.Equals(""))
             {

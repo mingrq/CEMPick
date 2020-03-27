@@ -36,14 +36,14 @@ namespace CRMPick
             string[] limitarray = limiteds.Split(',');
             for (int i = 0; i < limitarray.Length; i++)
             {
-                //if (limitarray[i].Equals("1"))//crm
-                //{
-                //    sp_crm.Visibility = Visibility.Visible;
-                //}
-                //if (limitarray[i].Equals("2"))//采集
-                //{
-                //    sp_caiji.Visibility = Visibility.Visible;
-                //}
+                if (limitarray[i].Equals("1"))//crm
+                {
+                    sp_crm.Visibility = Visibility.Visible;
+                }
+                if (limitarray[i].Equals("2"))//采集
+                {
+                    sp_caiji.Visibility = Visibility.Visible;
+                }
                 if (limitarray[i].Equals("3"))//挑入
                 {
                     sp_tiaoru.Visibility = Visibility.Visible;
