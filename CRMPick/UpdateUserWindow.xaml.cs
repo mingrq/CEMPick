@@ -1,5 +1,7 @@
 ﻿using CRMPick.Entity;
 using CRMPick.Utils;
+using Newtonsoft.Json;
+using Redslide.HttpLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,17 +93,53 @@ namespace CRMPick
                 user.username = (string)username.Content;
                 user.tiaoruresourcecount = long.Parse(tiaorucount) > 999999999 ? 999999999 : int.Parse(tiaorucount);
                 user.gatherresourcecount = long.Parse(gathercount) > 999999999 ? 999999999 : int.Parse(gathercount);
-                MysqlUtil mySql = new MysqlUtil();
-                bool isupdate = mySql.updateUser(user);
-                if (isupdate)
-                {
-                    userControlWindow.resh();
-                    this.Close();
-                }
-                else
-                {
-                    MessageBox.Show("添加失败");
-                }
+
+
+                Request.Post("https://demo.22com.cn/public/index.php/index/admin/updateuser",
+                        new
+                        {
+                            team = teamname,
+                            username = (string)username.Content,
+                            limited = limits,
+                            tiaoruresourcecount = long.Parse(tiaorucount) > 999999999 ? 999999999 : int.Parse(tiaorucount),
+                            gatherresourcecount = long.Parse(gathercount) > 999999999 ? 999999999 : int.Parse(gathercount)
+                        },
+                         result =>
+                         {
+                             try
+                             {
+                                 Data<string> data = JsonConvert.DeserializeObject<Data<string>>(result);
+                                 string caption = "提示";
+                                 string message = data.message;
+                                 if (data.code == 10000)
+                                 {
+                                     // Show message box
+                                     MessageBoxResult msgresult = MessageBox.Show(message, caption);
+                                     if (msgresult == MessageBoxResult.OK)
+                                     {
+                                         this.Dispatcher.Invoke(new Action(() =>
+                                         {
+                                             userControlWindow.updateresh(user);
+                                             this.Close();
+                                         }));
+                                     }
+                                 }
+                                 else
+                                 {
+                                     MessageBox.Show(message, caption);
+                                 }
+                             }
+                             catch (Exception exc)
+                             {
+                                 MessageBox.Show("密码修改失败");
+                             }
+
+                         },
+                         fail =>
+                         {
+                             MessageBox.Show("服务器连接失败");
+                         });
+               
             }
         }
 

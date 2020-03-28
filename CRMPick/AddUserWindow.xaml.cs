@@ -1,5 +1,7 @@
 ﻿using CRMPick.Entity;
 using CRMPick.Utils;
+using Newtonsoft.Json;
+using Redslide.HttpLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +24,7 @@ namespace CRMPick
     /// </summary>
     public partial class AddUserWindow : Window
     {
-        private bool isusernamerepeat = false;
+       
         UserControlWindow userControlWindow;
         public AddUserWindow(UserControlWindow userControlWindow)
         {
@@ -32,12 +34,7 @@ namespace CRMPick
 
         private void AddUser(object sender, MouseButtonEventArgs e)
         {
-            if (isusernamerepeat)
-            {
-                MessageBox.Show("用户名已存在，请修改用户名!!");
-            }
-            else
-            {
+         
                 string teamname = team.Text.Trim();
                 string userna = username.Text.Trim();
                 string tiaorucount = tiaoruresourcecount.Text.Trim().Length > 9 ? "999999999" : tiaoruresourcecount.Text.Trim();
@@ -63,36 +60,56 @@ namespace CRMPick
                     user.limited = limits;
                     user.tiaoruresourcecount = long.Parse(tiaorucount) > 999999999 ? 999999999 : int.Parse(tiaorucount);
                     user.gatherresourcecount = long.Parse(gathercount) > 999999999 ? 999999999 : int.Parse(gathercount);
-                    MysqlUtil mySql = new MysqlUtil();
-                    bool isadd = mySql.addUser(user);
-                    if (isadd)
+                    Request.Post("https://demo.22com.cn/public/index.php/index/admin/adduser",
+                    new
                     {
-                        userControlWindow.resh();
-                        this.Close();
-                    }
-                    else
+                        team = teamname,
+                        username = userna,
+                        limited = limits,
+                        tiaoruresourcecount = long.Parse(tiaorucount) > 999999999 ? 999999999 : int.Parse(tiaorucount),
+                        gatherresourcecount = long.Parse(gathercount) > 999999999 ? 999999999 : int.Parse(gathercount)
+                    },
+                    addresult =>
                     {
-                        MessageBox.Show("添加失败");
-                    }
+                        Console.WriteLine(addresult);
+                        try
+                        {
+                            Data<string> data = JsonConvert.DeserializeObject<Data<string>>(addresult);
+                            string addresultcaption = "提示";
+                            string addresultmessage = data.message;
+                            if (data.code == 10000)
+                            {
+                                // Show message box
+                                MessageBoxResult msgresult = MessageBox.Show(addresultmessage, addresultcaption);
+                                if (msgresult == MessageBoxResult.OK)
+                                {
+                                    this.Dispatcher.Invoke(new Action(() =>
+                                    {
+                                        userControlWindow.addresh(user);
+                                        this.Close();
+                                    }));
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show(addresultmessage, addresultcaption);
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            MessageBox.Show("添加用户失败");
+                        }
+
+                    },
+                     fail =>
+                     {
+                         Console.WriteLine(fail.ToString());
+                         MessageBox.Show("服务器连接失败");
+                     });
                 }
-            }
+            
         }
 
-        private void usernameLostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-            string usernamem = textBox.Text;
-            MysqlUtil mySql = new MysqlUtil();
-            isusernamerepeat = mySql.getUserNameRepeat(usernamem);
-            if (isusernamerepeat)
-            {
-                repeat.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                repeat.Visibility = Visibility.Collapsed;
-            }
-        }
         /// <summary>
         /// 限制只能输入数字
         /// </summary>

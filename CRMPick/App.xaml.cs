@@ -31,7 +31,7 @@ namespace CRMPick
         FileStream fs = new FileStream(userSaveFiler, FileMode.OpenOrCreate);
         StreamWriter sw = new StreamWriter(fs);
          
-            sw.WriteLine($"抓到未知异常：", e.Exception);
+            sw.WriteLine($"抓到未知异常：", e.Exception.ToString());
             sw.Close();
             fs.Close();
         }

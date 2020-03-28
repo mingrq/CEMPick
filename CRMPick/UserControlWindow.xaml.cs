@@ -1,5 +1,7 @@
 ﻿using CRMPick.Entity;
 using CRMPick.Utils;
+using Newtonsoft.Json;
+using Redslide.HttpLib;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,7 +25,7 @@ namespace CRMPick
     /// </summary>
     public partial class UserControlWindow : Window
     {
-        
+
         public UserControlWindow()
         {
             InitializeComponent();
@@ -44,18 +46,38 @@ namespace CRMPick
         private void WinLoaded(object sender, EventArgs e)
         {
             this.Topmost = false;
-            Thread thr = new Thread(() =>
-            {
-                //这里还可以处理些比较耗时的事情。
-                MysqlUtil mysqlUtil = new MysqlUtil();
-                List<UserClass> users = mysqlUtil.getUserList();
-                this.Dispatcher.Invoke(new Action(() =>
-                {
-                    list.ItemsSource = null;
-                    list.ItemsSource = users;
-                }));
-            });
-            thr.Start();
+            Request.Get("https://demo.22com.cn/public/index.php/index/admin/getuserlist",
+                         null,
+                         result =>
+                         {
+                             try
+                             {
+                                 Data<List<UserClass>> data = JsonConvert.DeserializeObject<Data<List<UserClass>>>(result);
+                                 if (data.code == 10000)
+                                 {
+                                     this.Dispatcher.Invoke(new Action(() =>
+                                     {
+                                         list.ItemsSource = null;
+                                         list.ItemsSource = data.result;
+                                     }));
+                                 }
+                                 else
+                                 {
+                                     string caption = "提示";
+                                     string message = data.message;
+                                     MessageBox.Show(message, caption);
+                                 }
+                             }
+                             catch (Exception exc)
+                             {
+                                 MessageBox.Show("用户列表获取失败");
+                             }
+
+                         },
+                         fail =>
+                         {
+                             MessageBox.Show("用户列表获取失败");
+                         });
         }
 
         /// <summary>
@@ -102,18 +124,50 @@ namespace CRMPick
                 MessageBoxResult result = MessageBox.Show(message, caption, buttons);
                 if (result == MessageBoxResult.OK)
                 {
-                    MysqlUtil mysqlUtil = new MysqlUtil();
-                    if (mysqlUtil.deleteUser(userclass.username))
-                    {
-                        List<UserClass> users = (List<UserClass>)list.ItemsSource;
-                        users.Remove(userclass);
-                        list.ItemsSource = null;
-                        list.ItemsSource = users;
-                    }
-                    else
-                    {
-                        MessageBox.Show("删除失败");
-                    }
+
+                    Request.Post("https://demo.22com.cn/public/index.php/index/admin/deletuser",
+                        new
+                        {
+                            username = userclass.username
+                        },
+                         delresult =>
+                         {
+                             try
+                             {
+                                 Data<string> data = JsonConvert.DeserializeObject<Data<string>>(delresult);
+                                 string delresultcaption = "提示";
+                                 string delresultmessage = data.message;
+                                 if (data.code == 10000)
+                                 {
+                                     // Show message box
+                                     MessageBoxResult msgresult = MessageBox.Show(delresultmessage, delresultcaption);
+                                     if (msgresult == MessageBoxResult.OK)
+                                     {
+                                         this.Dispatcher.Invoke(new Action(() =>
+                                         {
+                                             List<UserClass> users = (List<UserClass>)list.ItemsSource;
+                                             users.Remove(userclass);
+                                             list.ItemsSource = null;
+                                             list.ItemsSource = users;
+                                         }));
+                                     }
+                                 }
+                                 else
+                                 {
+                                     MessageBox.Show(message, caption);
+                                 }
+                             }
+                             catch (Exception exc)
+                             {
+                                 MessageBox.Show("用户删除失败");
+                             }
+
+                         },
+                         fail =>
+                         {
+                             MessageBox.Show("服务器连接失败");
+                         });
+
                 }
             }
         }
@@ -134,37 +188,82 @@ namespace CRMPick
             {
                 var btn = sender as Button;
                 var userclass = btn.DataContext as UserClass;
-                MysqlUtil mysqlUtil = new MysqlUtil();
-                if (mysqlUtil.deleteFac(userclass.username))
-                {
-                    List<UserClass> users = (List<UserClass>)list.ItemsSource;
-                    int i = users.IndexOf(userclass);
-                    users[i].facilitytwo = "";
-                    users[i].facility = "";
-                    list.ItemsSource = null;
-                    list.ItemsSource = users;
-                }
-                else
-                {
-                    MessageBox.Show("清空失败");
-                }
+
+
+                Request.Post("https://demo.22com.cn/public/index.php/index/admin/equipment",
+                        new
+                        {
+                            username = userclass.username
+                        },
+                         delresult =>
+                         {
+                             try
+                             {
+                                 Data<string> data = JsonConvert.DeserializeObject<Data<string>>(delresult);
+                                 string delresultcaption = "提示";
+                                 string delresultmessage = data.message;
+                                 if (data.code == 10000)
+                                 {
+                                     // Show message box
+                                     MessageBoxResult msgresult = MessageBox.Show(delresultmessage, delresultcaption);
+                                     if (msgresult == MessageBoxResult.OK)
+                                     {
+                                         this.Dispatcher.Invoke(new Action(() =>
+                                         {
+                                             List<UserClass> users = (List<UserClass>)list.ItemsSource;
+                                             int i = users.IndexOf(userclass);
+                                             users[i].facilitytwo = "";
+                                             users[i].facility = "";
+                                             list.ItemsSource = null;
+                                             list.ItemsSource = users;
+                                         }));
+                                     }
+                                 }
+                                 else
+                                 {
+                                     MessageBox.Show(delresultmessage, delresultcaption);
+                                 }
+                             }
+                             catch (Exception exc)
+                             {
+                                 MessageBox.Show("设备清空失败");
+                             }
+
+                         },
+                         fail =>
+                         {
+                             MessageBox.Show("服务器连接失败");
+                         });
             }
         }
 
-        public void resh()
+        public void addresh(UserClass user)
         {
-            Thread thr = new Thread(() =>
+            List<UserClass> users = (List<UserClass>)list.ItemsSource;
+            users.Add(user);
+            this.Dispatcher.Invoke(new Action(() =>
             {
-                //这里还可以处理些比较耗时的事情。
-                MysqlUtil mysqlUtil = new MysqlUtil();
-                List<UserClass> users = mysqlUtil.getUserList();
-                this.Dispatcher.Invoke(new Action(() =>
+                list.ItemsSource = null;
+                list.ItemsSource = users;
+            }));
+        }
+
+
+        public void updateresh(UserClass user)
+        {
+            List<UserClass> users = (List<UserClass>)list.ItemsSource;
+           for(int i = 0; i < users.Count; i++)
+            {
+                if(users[i].username == user.username)
                 {
-                    list.ItemsSource = null;
-                    list.ItemsSource = users;
-                }));
-            });
-            thr.Start();
+                    users[i] = user;
+                }
+            }
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                list.ItemsSource = null;
+                list.ItemsSource = users;
+            }));
         }
 
         /// <summary>
@@ -183,19 +282,32 @@ namespace CRMPick
             {
                 var btn = sender as Button;
                 var userclass = btn.DataContext as UserClass;
-                MysqlUtil mysqlUtil = new MysqlUtil();
-                string pw = Encryption.GenerateMD5("111111");
-                if (mysqlUtil.pwback(userclass.username,pw))
-                {
-                    List<UserClass> users = (List<UserClass>)list.ItemsSource;
-                    int i = users.IndexOf(userclass);
-                    users[i].userpw = pw;
-                    MessageBox.Show("密码还原成功!");
-                }
-                else
-                {
-                    MessageBox.Show("还原失败");
-                }
+
+                Request.Post("https://demo.22com.cn/public/index.php/index/admin/resetpw",
+                        new
+                        {
+                            username = userclass.username
+                        },
+                         restresult =>
+                         {
+                             try
+                             {
+                                 Data<string> data = JsonConvert.DeserializeObject<Data<string>>(restresult);
+                                 string restcaption = "提示";
+                                 string restmessage = data.message;
+                                 MessageBox.Show(restmessage, restcaption);
+                             }
+                             catch (Exception exc)
+                             {
+                                 MessageBox.Show("密码还原失败");
+                             }
+
+                         },
+                         fail =>
+                         {
+                             MessageBox.Show("服务器连接失败");
+                         });
+
             }
         }
     }
