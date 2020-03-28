@@ -244,5 +244,9 @@
       <Name>Redslide.HttpLib</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="dll\dc.dll" />
+    <Content Include="dll\wininet.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
