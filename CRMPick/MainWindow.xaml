@@ -53,6 +53,14 @@
                         <TextBlock TextWrapping="Wrap" Text="可将输入的资源信息挑入仓库，保存到指定路径的Excel中" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
+                <StackPanel x:Name="sp_xinzeng" Orientation="Horizontal" Visibility="Collapsed">
+                    <Border MouseLeftButtonDown="QuanLiangXinZengOnClick">
+                        <Label Content="全量新增"/>
+                    </Border>
+                    <Border Style="{x:Null}" Width="360" CornerRadius="4" Background="#19000000"  Margin="20,20,0,0">
+                        <TextBlock TextWrapping="Wrap" Text="全量新增" Foreground="#333333"  Margin="8" FontSize="14"/>
+                    </Border>
+                </StackPanel>
                 <StackPanel x:Name="sp_yonguguanli" Orientation="Horizontal" Visibility="Collapsed">
                     <Border MouseLeftButtonDown="UserControlOnClick">
                         <Label Content="用户管理"/>
@@ -70,7 +78,6 @@
                         <TextBlock TextWrapping="Wrap" Text="用户密码修改" Foreground="#333333"  Margin="8" FontSize="14"/>
                     </Border>
                 </StackPanel>
-                <!--<WebBrowser x:Name="webBrower" Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"/>-->
             </StackPanel>
 
         </Grid>

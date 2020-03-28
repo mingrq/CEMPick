@@ -49,6 +49,10 @@ namespace CRMPick
                 {
                     sp_yonguguanli.Visibility = Visibility.Visible;
                 }
+                if (limitarray[i].Equals("5"))//全量新增
+                {
+                    sp_xinzeng.Visibility = Visibility.Visible;
+                }
             }
         }
 
@@ -96,6 +100,14 @@ namespace CRMPick
             updatePwWindow.SetUserEntity(user);
             updatePwWindow.Topmost = true;
             updatePwWindow.Show();
+        }
+
+        private void QuanLiangXinZengOnClick(object sender, MouseButtonEventArgs e)
+        {
+            QuanLiangXinZeng quanLiangXinZeng = new QuanLiangXinZeng();
+            quanLiangXinZeng.Topmost = true;
+            quanLiangXinZeng.Show();
+            this.Close();
         }
     }
 }

@@ -123,6 +123,9 @@
     <Compile Include="Entity\LoginClass.cs" />
     <Compile Include="Entity\Data.cs" />
     <Compile Include="Entity\UserClass.cs" />
+    <Compile Include="QuanLiangXinZeng.xaml.cs">
+      <DependentUpon>QuanLiangXinZeng.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\DeleteCookies.cs" />
     <Compile Include="Utils\Logistics.cs" />
     <Compile Include="UpdatePwWindow.xaml.cs">
@@ -178,6 +181,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="QuanLiangXinZeng.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UpdatePwWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

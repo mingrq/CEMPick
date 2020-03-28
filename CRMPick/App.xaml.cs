@@ -25,15 +25,16 @@ namespace CRMPick
 
         void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-          
-             string userSaveFiler = Directory.GetCurrentDirectory() + "\\errorlog.txt";//用户账号保存文件
-       
-        FileStream fs = new FileStream(userSaveFiler, FileMode.OpenOrCreate);
-        StreamWriter sw = new StreamWriter(fs);
-         
-            sw.WriteLine($"抓到未知异常：", e.Exception.ToString());
-            sw.Close();
-            fs.Close();
+            string errorSaveFiler = Directory.GetCurrentDirectory() + "\\errorlog.txt";//用户账号保存文件
+            try
+            {
+                File.AppendAllText(errorSaveFiler, "\r\n"+ DateTime.Now.ToString()+"      " + e.Exception.ToString());
+            }
+            catch
+            {
+
+            }
+           
         }
     }
    

@@ -54,6 +54,7 @@ namespace CRMPick
                     limits += pccb.IsChecked == true ? ",2" : "";
                     limits += ptcb.IsChecked == true ? ",3" : "";
                     limits += usercb.IsChecked == true ? ",4" : "";
+                    limits += quanliang.IsChecked == true ? ",5" : "";
                     UserClass user = new UserClass();
                     user.team = teamname;
                     user.username = userna;

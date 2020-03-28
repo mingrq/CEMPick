@@ -74,6 +74,7 @@
                 <CheckBox x:Name="crmcb" Content="CRM" IsChecked="True" IsEnabled="False"/>
                 <CheckBox x:Name="pccb" Content="批量查询" />
                 <CheckBox x:Name="ptcb" Content="批量挑入"/>
+                <CheckBox x:Name="quanliang" Content="全量新增"/>
                 <CheckBox x:Name="usercb" Content="用户管理"/>
             </WrapPanel>
         </StackPanel>
