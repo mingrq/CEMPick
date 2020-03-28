@@ -30,8 +30,6 @@ namespace CRMPick
         {
             InitializeComponent();
             this.user = user;
-            IeVersionClass ieVersion = new IeVersionClass();
-            ieVersion.SetIEVer(IeVersion.标准ie9);
             string limiteds = user.limited;
             string[] limitarray = limiteds.Split(',');
             for (int i = 0; i < limitarray.Length; i++)

@@ -62,9 +62,7 @@
   <PropertyGroup>
     <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\Unofficial.Microsoft.mshtml.7.0.3300\lib\net40\Microsoft.mshtml.dll</HintPath>
@@ -95,7 +93,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -126,6 +123,8 @@
     </Compile>
     <Compile Include="Dc.cs" />
     <Compile Include="Entity\CustomerListClass.cs" />
+    <Compile Include="Entity\LoginClass.cs" />
+    <Compile Include="Entity\Data.cs" />
     <Compile Include="Entity\UserClass.cs" />
     <Compile Include="Utils\DeleteCookies.cs" />
     <Compile Include="Utils\Logistics.cs" />
@@ -216,7 +215,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -237,6 +235,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\002\Downloads\httplib\sourceCode\sourceCode\Redslide.HttpLib\Redslide.HttpLib\Redslide.HttpLib.csproj">
+      <Project>{733bb7c1-3f44-4f4f-b2a9-b5af6b2ee859}</Project>
+      <Name>Redslide.HttpLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

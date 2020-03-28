@@ -11,16 +11,26 @@ namespace CRMPick.Utils
     {
         public static string GetUUID()
         {
-            string code = null;
-            SelectQuery query = new SelectQuery("select * from Win32_ComputerSystemProduct");
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+            try
             {
-                foreach (var item in searcher.Get())
+                string cpuInfo = "";//cpu序列号 
+                ManagementClass mc = new ManagementClass("Win32_Processor");
+                ManagementObjectCollection moc = mc.GetInstances();
+                foreach (ManagementObject mo in moc)
                 {
-                    using (item) code = item["UUID"].ToString();
+                    cpuInfo = mo.Properties["ProcessorId"].Value.ToString();
                 }
+                moc = null;
+                mc = null;
+                return cpuInfo;
             }
-            return code;
+            catch
+            {
+                return "";
+            }
+            finally
+            {
+            }
         }
     }
 }

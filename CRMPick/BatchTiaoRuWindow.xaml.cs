@@ -483,7 +483,7 @@ namespace CRMPick
             Console.WriteLine(json);
             try
             {
-                CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
+            CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
             string err = customer.errorMsg;//搜索错误信息
             //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
 

@@ -8,16 +8,42 @@ using System.Threading.Tasks;
 namespace CRMPick.Entity
 {
     public class UserClass
-    {
-        public string team { set; get; }
-        public string username { set; get; }
-        public string userpw { set; get; }
-        public string facility { set; get; }
-        public string facilitytwo { set; get; }
-        public string limited { set; get; }
-        public int logincount { set; get; }
-        public int gatherresourcecount { set; get; }
-        public int tiaoruresourcecount { set; get; }
+    {/// <summary>
+     /// 
+     /// </summary>
+        public string team { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string username { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string userpw { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string facility { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string facilitytwo { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int gatherresourcecount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int tiaoruresourcecount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string limited { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int logincount { get; set; }
 
     }
 }

@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Redslide.HttpLib;
+using Newtonsoft.Json;
 
 namespace CRMPick
 {
@@ -55,7 +57,7 @@ namespace CRMPick
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-       
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string usernamee = usernameep = username.Text.Trim();
@@ -73,140 +75,82 @@ namespace CRMPick
             else
             {
                 pw = Encryption.GenerateMD5(pw);
-                MysqlUtil mySqlUtil = new MysqlUtil();
-                UserClass user = mySqlUtil.getUser(usernamee);
-                if (user != null)
+                string uuid = UUIDClass.GetUUID();
+                Object users = new
                 {
-                    if (pw.Equals(user.userpw))
+                    username = usernamee,
+                    pw = pw,
+                    uuid = uuid
+                };
+                Request.Post("https://demo.22com.cn/public/index.php/index/login/login", users,
+                    result =>
                     {
-                        MysqlUtil mysqlUtil = new MysqlUtil();
-                        /**
-                         *管理员登录不进行uuid对比
-                         */
-                        if (user.username.Equals("admin"))
+                    try
+                    {
+                        LoginClass login = JsonConvert.DeserializeObject<LoginClass>(result);
+                        if (login.code == 10000)
                         {
-                            LoginSuccess(mySqlUtil, user);
-                        }
-                        else
-                        {
-                            string uuid = UUIDClass.GetUUID();
-                            if (!user.facility.Equals(""))
-                            {
-                                if (user.facility.Equals(uuid))
-                                {
-                                    LoginSuccess(mySqlUtil, user);
-                                }
-                                else
-                                {
-                                    if (!user.facilitytwo.Equals(""))
-                                    {
-                                        if (user.facilitytwo.Equals(uuid))
-                                        {
-                                            LoginSuccess(mySqlUtil, user);
-                                        }
-                                        else
-                                        {
-                                            MessageBox.Show("设备不允许使用此工具,请联系管理员开通权限！");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        mysqlUtil.updateUUID(uuid, "facilitytwo", user.username);
-                                        LoginSuccess(mySqlUtil, user);
-                                    }
-                                }
-
+                            this.Dispatcher.Invoke(new Action(() => {
+                                MainWindow mainWindow = new MainWindow(login.result);
+                                mainWindow.Show();
+                                ischeck = (bool)jizhumima.IsChecked;
+                                Thread thread = new Thread(SaveUserAcc);
+                                thread.Start();
+                                this.Close();
+                            }));
+                               
                             }
                             else
                             {
-                                mysqlUtil.updateUUID(uuid, "facility", user.username);
-                                LoginSuccess(mySqlUtil, user);
+                                MessageBox.Show(login.message);
                             }
                         }
-
-                    }
-                    else
+                        catch(Exception exc)
+                        {
+                            Console.WriteLine(exc.Message);
+                            MessageBox.Show("服务器连接失败");
+                        }
+                    },
+                    fail =>
                     {
-                        MessageBox.Show("密码错误");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("用户不存在");
-                }
+                        MessageBox.Show("服务器连接失败");
+                    });
             }
         }
 
-
-        string FouseContent;
-        /// <summary>
-        /// 失去焦点
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MLostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-            if (textBox.Text.Trim().Equals(""))
-            {
-                textBox.Text = FouseContent;
-            }
-        }
-
-        /// <summary>
-        /// 登录成功，跳转页面
-        /// </summary>
-        private void LoginSuccess(MysqlUtil mySqlUtil, UserClass user)
-        {
-            user.logincount++;
-            mySqlUtil.updateLoginCount(user.username, user.logincount);
-            MainWindow mainWindow = new MainWindow(user);
-            mainWindow.Show();
-            ischeck = (bool)jizhumima.IsChecked;
-            Thread thread = new Thread(SaveUserAcc);
-            thread.Start();
-            this.Close();
-        }
 
         /// <summary>
         /// 登录成功，将用户账号保存到本地
         /// </summary>
         private void SaveUserAcc()
         {
-            FileStream fs = null;
-            StreamWriter sw = null;
-            string encryptuser = StringSecurity.DESEncrypt(usernameep);
-            string encryptpw;
-           
-            fs = new FileStream(userSaveFiler, FileMode.OpenOrCreate);
-            sw = new StreamWriter(fs);
-            if (ischeck)
+            try
             {
-                encryptpw = StringSecurity.DESEncrypt(pwp);
+                FileStream fs = null;
+                StreamWriter sw = null;
+                string encryptuser = StringSecurity.DESEncrypt(usernameep);
+                string encryptpw;
+
+                fs = new FileStream(userSaveFiler, FileMode.OpenOrCreate);
+                sw = new StreamWriter(fs);
+                if (ischeck)
+                {
+                    encryptpw = StringSecurity.DESEncrypt(pwp);
+                }
+                else
+                {
+                    encryptpw = "";
+                }
+                sw.WriteLine(encryptuser + "&" + encryptpw);
+                sw.Close();
+                fs.Close();
             }
-            else
+            catch
             {
-                encryptpw = "";
+
             }
-            sw.WriteLine(encryptuser + "&" + encryptpw);
-            sw.Close();
-            fs.Close();
-           
         }
 
-        /// <summary>
-        /// 获取焦点
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MGotFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = (TextBox)sender;
-            if (textBox.Text.Equals("用户名") || textBox.Text.Equals("用户密码"))
-            {
-                FouseContent = textBox.Text;
-                textBox.Text = "";
-            }
-        }
+      
     }
 }

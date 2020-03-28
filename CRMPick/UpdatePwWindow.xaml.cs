@@ -1,5 +1,7 @@
 ﻿using CRMPick.Entity;
 using CRMPick.Utils;
+using Newtonsoft.Json;
+using Redslide.HttpLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +29,7 @@ namespace CRMPick
         public UpdatePwWindow()
         {
             InitializeComponent();
-            
+
         }
 
         public void SetUserEntity(UserClass userclsaa)
@@ -53,24 +55,46 @@ namespace CRMPick
             }
             else
             {
-                MysqlUtil mySql = new MysqlUtil();
-                bool isupdate = mySql.updateUserPw(userclsaa.username,Encryption.GenerateMD5(userpwa));
-                if (isupdate)
-                {
-                    string message = "密码修改成功!";
-                    string caption = "提示";
-                    // Show message box
-                    MessageBoxResult result = MessageBox.Show(message, caption);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        this.Close();
-                    }
-                    
-                }
-                else
-                {
-                    MessageBox.Show("修改失败");
-                }
+                Request.Post("https://demo.22com.cn/public/index.php/index/admin/alterpw",
+                        new
+                        {
+                            username = userclsaa.username,
+                            pw = Encryption.GenerateMD5(userpwa)
+                        },
+                         result =>
+                         {
+                             try
+                             {
+                                 Data<string> data = JsonConvert.DeserializeObject<Data<string>>(result);
+                                 string caption = "提示";
+                                 string message = data.message;
+                                 if (data.code == 10000)
+                                 {
+                                  // Show message box
+                                  MessageBoxResult msgresult = MessageBox.Show(message, caption);
+                                     if (msgresult == MessageBoxResult.OK)
+                                     {
+                                         this.Dispatcher.Invoke(new Action(() =>
+                                         {
+                                             this.Close();
+                                         }));
+                                     }
+                                 }
+                                 else
+                                 {
+                                     MessageBox.Show(message, caption);
+                                 }
+                             }
+                             catch (Exception exc)
+                             {
+                                 MessageBox.Show("密码修改失败");
+                             }
+
+                         },
+                         fail =>
+                         {
+                             MessageBox.Show("服务器连接失败");
+                         });
             }
         }
 
@@ -81,4 +105,5 @@ namespace CRMPick
             this.Topmost = false;
         }
     }
+
 }
