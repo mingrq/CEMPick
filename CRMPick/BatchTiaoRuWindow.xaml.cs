@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,20 +28,23 @@ namespace CRMPick
     /// </summary>
     public partial class BatchTiaoRuWindow : Window
     {
+        [DllImport("KERNEL32.DLL", EntryPoint = "SetProcessWorkingSetSize", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool SetProcessWorkingSetSize(IntPtr pProcess, int dwMinimumWorkingSetSize, int dwMaximumWorkingSetSize);
+
+        [DllImport("KERNEL32.DLL", EntryPoint = "GetCurrentProcess", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr GetCurrentProcess();
+
+
         private bool XunHuanTiaoRuc = false;//是否循环挑入
         private bool CanOperation = false;//可以操作
-        private bool CanPick = false;//可以操作
         private int startss = 10000;//开始间隔毫秒
         private int endss = 20000;//结束间隔毫秒
         private InjectJs inject;
         private IHTMLDocument2 doc;
         private IHTMLWindow2 win;
         private string resource;//正在搜索的资源
-        private string excelPath = "";
         private UserClass user;
         private string hint = "将客户资源复制到文本框中，点击开始挑入，程序会将挑入的信息保存到指定的Excel中";
-        private string filesavepath = Directory.GetCurrentDirectory() + "\\excelpath.txt";//excel路径保存文件
-        string excelpath;
         private int codeerr = 0;//验证码错误次数
         private string pickurl = "";//挑入页面网址
         private bool clockstop = false;//定时关闭 true：停止 false：继续
@@ -52,29 +56,6 @@ namespace CRMPick
             //清除cookies
             DeleteCookies deleteCookies = new DeleteCookies();
             deleteCookies.SuppressWininetBehavior();
-            if (File.Exists(filesavepath))
-            {
-                //账号信息文件存在
-                StreamReader reader = new StreamReader(filesavepath);
-                string acce = reader.ReadToEnd();
-                if (!acce.Trim().Equals(""))
-                {
-                    string[] accearray = acce.Split('\n');
-                    for (int i = 0; i < accearray.Length; i++)
-                    {
-                        string exce = accearray[i];
-                        if (exce.IndexOf("tiaoru") >= 0)
-                        {
-                            this.pathTb.Text = exce.Substring(exce.IndexOf('@') + 1);
-                        }
-                    }
-                    reader.Close();
-                }
-            }
-            if (this.pathTb.Text.Trim().Equals(""))
-            {
-                this.pathTb.Text = SelectFolder.getWinPath();
-            }
             this.user = user;
             xianzhi.Content = "*最多输入" + user.tiaoruresourcecount + "条资源!";
             this.ContentRendered += MLoad;
@@ -89,12 +70,6 @@ namespace CRMPick
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
             this.pickWebBrowser.LoadCompleted += new LoadCompletedEventHandler(Pickwebbrowser_LoadCompleted);
-            if (!ExcelOperation.CheckExcelExist())
-            {
-                //没有Excel
-                MessageBox.Show("你的电脑上没有安装Excel");
-                return;
-            }
         }
 
 
@@ -148,7 +123,6 @@ namespace CRMPick
                 //查询结束
                 reshUi(1);
                 tbresouses.Text = hint;
-                MessageBox.Show("没有资源了，查询结束！！");
             }
             else
             {
@@ -295,17 +269,6 @@ namespace CRMPick
         /// </summary>
         private bool examineCan()
         {
-            //获取excel放置位置
-            excelpath = pathTb.Text.Trim();
-            if (excelpath.Equals(""))
-            {
-                MessageBox.Show("请设置文件保存路径!");
-                return false;
-            }
-
-            //保存设置的文件路径
-            Thread thread = new Thread(SaveUserAcc);
-            thread.Start();
 
             //获取间隔时间
             if (starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
@@ -326,53 +289,29 @@ namespace CRMPick
             //开始挑入
             if (CanOperation)
             {
-                //判断本页面是否创建excel，没有创建就创建
-                if (excelPath.Equals(""))
+
+                string tbresousess = tbresouses.Text.TrimEnd('\r').Trim();
+                if (tbresousess.Equals("") || tbresousess.Equals(hint))
                 {
-                    excelPath = ExcelOperation.CreateExcel(excelpath, 2);//创建excel
-                }
-                if (!excelPath.Equals(""))
-                {
-                    string tbresousess = tbresouses.Text.TrimEnd('\r').Trim();
-                    if (tbresousess.Equals("") || tbresousess.Equals(hint))
-                    {
-                        MessageBox.Show("没有资源了");
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    return false;
                 }
                 else
                 {
-                    MessageBox.Show("Excel创建失败!");
-                    return false;
+                    return true;
                 }
+
             }
             else
             {
-                MessageBox.Show("页面不正确，无法进行操作");
+                MessageBox.Show("页面不正确，请重新打开程序");
                 return false;
             }
         }
 
-        /// <summary>
-        /// 将文件保存到本地
-        /// </summary>
-        private void SaveUserAcc()
-        {
-            FileStream fs = null;
-            StreamWriter sw = null;
-            fs = new FileStream(filesavepath, FileMode.OpenOrCreate);
-            sw = new StreamWriter(fs);
-            sw.WriteLine("tiaoru@" + excelpath + "\n");
-            sw.Close();
-            fs.Close();
-        }
 
 
-        
+
+
 
         /// <summary>
         /// 调整ui
@@ -387,8 +326,6 @@ namespace CRMPick
                 startBtn.Visibility = Visibility.Collapsed;
                 starts.IsEnabled = false;
                 ends.IsEnabled = false;
-                pathTb.IsEnabled = false;
-                pathsele.IsEnabled = false;
                 datestart.IsEnabled = false;
                 timePickerstart.IsEnabled = false;
                 dateover.IsEnabled = false;
@@ -483,98 +420,98 @@ namespace CRMPick
             Console.WriteLine(json);
             try
             {
-            CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
-            string err = customer.errorMsg;//搜索错误信息
-            //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
+                CustomerListClass customer = JsonConvert.DeserializeObject<CustomerListClass>(json);
+                string err = customer.errorMsg;//搜索错误信息
+                                               //判断这次请求验证码是否输入正确，正确的话展示结果，错误的提示重新输入
 
-            if ((err != null && err.Equals("checkcode_error")) || (err != null && err.Equals("checkcode_need")))
-            {
-                codeerr++;
-                //验证码错误,请求之后验证码要消失掉
-                this.Dispatcher.BeginInvoke((Action)(delegate ()
+                if ((err != null && err.Equals("checkcode_error")) || (err != null && err.Equals("checkcode_need")))
                 {
-                    //要执行的方法
-                    if (codeerr <= 4)
+                    codeerr++;
+                    //验证码错误,请求之后验证码要消失掉
+                    this.Dispatcher.BeginInvoke((Action)(delegate ()
                     {
-                        getWinScript();
-                        win.execScript("reloadcode();", "javascript");//刷新验证码
-                        Thread thr = new Thread(() =>
+                        //要执行的方法
+                        if (codeerr <= 4)
                         {
-                            //这里还可以处理些比较耗时的事情。
-                            Thread.Sleep(2000);//延时10秒
-                            this.Dispatcher.Invoke(new Action(() =>
+                            getWinScript();
+                            win.execScript("reloadcode();", "javascript");//刷新验证码
+                            Thread thr = new Thread(() =>
                             {
-                                verfiyCode();//打码
-                            }));
-                        });
-                        thr.Start();
-                    }
-                    else
-                    {
-                        MessageBox.Show("验证码错误次数过多！");
-                        reshUi(1);
-                    }
-
-                }));
-            }
-            else
-            {
-                codeerr = 0;
-                //搜索成功
-                List<AllCustomerOpportunityListItem> AllCustomerOpportunityList = customer.allCustomerOpportunityList;
-                if (AllCustomerOpportunityList.Count == 0)
-                {
-                    //没有查询到符合条件的客户
-                    resourceRecord(resource, null, 0);
-                }
-                else
-                {
-                    List<AllCustomerOpportunityListItem> SeaCustomerOpportunityList = null;
-                    int resourceNameDifferentCount = 0;
-                    //存在资源
-                    for (int i = 0; i < AllCustomerOpportunityList.Count; i++)
-                    {
-                        //1、先判断所有资源名称是否相同
-                        AllCustomerOpportunityListItem item = AllCustomerOpportunityList[i];
-                        if (item.companyName.Equals(resource))
-                        {
-                            //2、判断是否有在库中的资源,有在仓库的直接记录后开始下一条资源查询
-                            if (item.productType.Equals("1") && item.depotOrSea.Equals("depot"))
-                            {
-                                resourceRecord(resource, item, 3);
-                                SeaCustomerOpportunityList = null;
-                                resourceNameDifferentCount = 0;
-                                return;
-                            }
-                            else
-                            {
-                                if (SeaCustomerOpportunityList == null)
+                                //这里还可以处理些比较耗时的事情。
+                                Thread.Sleep(2500);//延时2秒
+                                this.Dispatcher.Invoke(new Action(() =>
                                 {
-                                    SeaCustomerOpportunityList = new List<AllCustomerOpportunityListItem>();
-                                }
-                                SeaCustomerOpportunityList.Add(item);
-                            }
+                                    verfiyCode();//打码
+                                }));
+                            });
+                            thr.Start();
                         }
                         else
                         {
-                            //资源名称与搜索名称不同
-                            resourceNameDifferentCount++;
+                            MessageBox.Show("验证码错误次数过多！");
+                            reshUi(1);
                         }
-                    }
-                    if (resourceNameDifferentCount == AllCustomerOpportunityList.Count)
+
+                    }));
+                }
+                else
+                {
+                    codeerr = 0;
+                    //搜索成功
+                    List<AllCustomerOpportunityListItem> AllCustomerOpportunityList = customer.allCustomerOpportunityList;
+                    if (AllCustomerOpportunityList.Count == 0)
                     {
-                        //4、所有资源名称都不正确
-                        resourceRecord(resource, null, 1);
+                        //没有查询到符合条件的客户
+                        resourceRecord(resource, null, 0);
                     }
                     else
                     {
-                        //3、所有资源都在公海，将信息记录
-                        resourceRecord(resource, SeaCustomerOpportunityList[0], 2);
+                        List<AllCustomerOpportunityListItem> SeaCustomerOpportunityList = null;
+                        int resourceNameDifferentCount = 0;
+                        //存在资源
+                        for (int i = 0; i < AllCustomerOpportunityList.Count; i++)
+                        {
+                            //1、先判断所有资源名称是否相同
+                            AllCustomerOpportunityListItem item = AllCustomerOpportunityList[i];
+                            if (item.companyName.Equals(resource))
+                            {
+                                //2、判断是否有在库中的资源,有在仓库的直接记录后开始下一条资源查询
+                                if (item.productType.Equals("1") && item.depotOrSea.Equals("depot"))
+                                {
+                                    resourceRecord(resource, item, 3);
+                                    SeaCustomerOpportunityList = null;
+                                    resourceNameDifferentCount = 0;
+                                    return;
+                                }
+                                else
+                                {
+                                    if (SeaCustomerOpportunityList == null)
+                                    {
+                                        SeaCustomerOpportunityList = new List<AllCustomerOpportunityListItem>();
+                                    }
+                                    SeaCustomerOpportunityList.Add(item);
+                                }
+                            }
+                            else
+                            {
+                                //资源名称与搜索名称不同
+                                resourceNameDifferentCount++;
+                            }
+                        }
+                        if (resourceNameDifferentCount == AllCustomerOpportunityList.Count)
+                        {
+                            //4、所有资源名称都不正确
+                            resourceRecord(resource, null, 1);
+                        }
+                        else
+                        {
+                            //3、所有资源都在公海，将信息记录
+                            resourceRecord(resource, SeaCustomerOpportunityList[0], 2);
+                        }
+                        resourceNameDifferentCount = 0;
+                        SeaCustomerOpportunityList = null;
                     }
-                    resourceNameDifferentCount = 0;
-                    SeaCustomerOpportunityList = null;
                 }
-            }
 
             }
             catch (Exception e)
@@ -600,7 +537,7 @@ namespace CRMPick
         {
             CacheImage cacheImage = new CacheImage();
             CacheImage.MyDelegate myDelegate = new CacheImage.MyDelegate(imgcheckCode);
-            cacheImage.GetCacheImage(webBrower, "imgcheckcode", myDelegate,this);
+            cacheImage.GetCacheImage(webBrower, "imgcheckcode", myDelegate, this);
         }
 
         public void imgcheckCode(string verificationCode)
@@ -609,20 +546,6 @@ namespace CRMPick
             win.execScript("overrideSearchOpportunity('viaContact');", "javascript");//查询JS
         }
 
-
-        /// <summary>
-        /// 选择文件夹路径按钮
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SelectFolderButtonClick(object sender, RoutedEventArgs e)
-        {
-            string path = SelectFolder.SelectFolderUtils();
-            if (!path.Equals(""))
-            {
-                pathTb.Text = path;
-            }
-        }
 
         /// <summary>
         /// 资源记录，保存到excel
@@ -637,13 +560,12 @@ namespace CRMPick
             {
                 case 0://没有资源
                     result = "没有搜索到这个资源";
-                    ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+                   
                     result = null;
                     Inquire();
                     break;
                 case 1://公司名称不符
                     result = "没有搜索到名称匹配资源";
-                    ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
                     result = null;
                     Inquire();
                     break;
@@ -677,7 +599,7 @@ namespace CRMPick
                     else
                     {
                         result = "已在仓库";
-                        ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+                     
                         result = null;
                     }
                     Inquire();
@@ -699,6 +621,15 @@ namespace CRMPick
         /// </summary>
         private void Inquire()
         {
+            try
+            {
+                IntPtr pHandle = GetCurrentProcess();
+                SetProcessWorkingSetSize(pHandle, -1, -1);
+            }
+            catch
+            {
+
+            }
             Thread.Sleep(RandomTime());//延时
 
             this.Dispatcher.BeginInvoke((Action)(delegate ()
@@ -785,8 +716,7 @@ namespace CRMPick
                         result = "分发目标的库容已满";
                         break;
                 }
-                    Inquire();
-                ExcelOperation.WriteToExcel(2, excelPath, resource, result, null, null, null, null, null, null);
+                Inquire();
             });
             thr.Start();
         }
@@ -857,16 +787,16 @@ namespace CRMPick
                         reshUi(0);//调整ui
                                   //开启倒计时
                         Thread thr = new Thread(() =>
-                         {
-                             Thread.Sleep(tim);
-                             this.Dispatcher.Invoke(new Action(() =>
-                             {
+                        {
+                            Thread.Sleep(tim);
+                            this.Dispatcher.Invoke(new Action(() =>
+                            {
 
-                                 InquireCompany();
-                                 timingStop();
+                                InquireCompany();
+                                timingStop();
 
-                             }));
-                         });
+                            }));
+                        });
                         thr.Start();
                     }
                     else

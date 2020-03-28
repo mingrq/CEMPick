@@ -137,7 +137,6 @@
     <Compile Include="Utils\CacheImage.cs" />
     <Compile Include="Utils\ExcelOperation.cs" />
     <Compile Include="Utils\GetTimeString.cs" />
-    <Compile Include="Utils\IeVersionClass.cs" />
     <Compile Include="Utils\InjectJs.cs" />
     <Compile Include="Utils\Encryption.cs" />
     <Compile Include="Utils\NumbiricTextBox.cs" />

@@ -2,7 +2,6 @@
 using System;
 using mshtml;
 using System.Windows;
-using static CRMPick.Utils.IeVersionClass;
 using System.Windows.Controls;
 using System.Threading;
 using System.Windows.Media.Imaging;
