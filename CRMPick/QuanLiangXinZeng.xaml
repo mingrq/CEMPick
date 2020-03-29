@@ -5,8 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRMPick"
         mc:Ignorable="d"
-        Title="全量新增" Height="450" Width="800">
+        Title="全量新增" Height="450" Width="800" WindowState="Maximized">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="360"/>
+        </Grid.ColumnDefinitions>
+        <WebBrowser x:Name="webBrower"  Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"></WebBrowser>
+        <Rectangle Grid.Column="1" Width="2" Fill="#DBDBDB"/>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+          
+            <Label Grid.Row="1" FontSize="14" FontWeight="Bold" Padding="0" Content="客户资源:" Margin="20,20,0,0"/>
+            <Label Grid.Row="2" FontSize="12" Padding="0" Foreground="Red" x:Name="xianzhi" Margin="20,0,0,0"/>
+            <TextBox x:Name="tbresouses" Padding="5" TextChanged="textChanged" GotFocus="TbGotF" LostFocus="TbLostF" Text="将客户资源复制到文本框中，点击开始查询" Grid.Row="3" AcceptsReturn="True"  Width="320" Margin="20,5,20,20" TextWrapping="Wrap"/>
+            <StackPanel Margin="20,0,0,0" Grid.Row="4"  Orientation="Horizontal">
+                <Label Content="间隔:" FontSize="10" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="starts" Width="50" VerticalContentAlignment="Center"/>
+                <Label Content="~" FontSize="10" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="ends" Width="50" VerticalContentAlignment="Center"/>
+                <Label Content="秒" FontSize="10" VerticalContentAlignment="Center"/>
+                <Canvas>
+                    <Button x:Name="startBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="开始查询" Click="Button_Click"/>
+                    <Button x:Name="pauseBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="暂停查询" Click="Button_Pause_Click" Visibility="Collapsed"/>
+                </Canvas>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

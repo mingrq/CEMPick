@@ -45,7 +45,7 @@ namespace CRMPick
         private IHTMLWindow2 win;
         private string resource;//正在搜索的资源
         private UserClass user;
-        private string hint = "将客户资源复制到文本框中，点击开始挑入，程序会将挑入的信息保存到指定的Excel中";
+        private string hint = "将客户资源复制到文本框中，点击开始挑入";
         private int codeerr = 0;//验证码错误次数
         private string pickurl = "";//挑入页面网址
         private bool clockstop = false;//定时关闭 true：停止 false：继续
