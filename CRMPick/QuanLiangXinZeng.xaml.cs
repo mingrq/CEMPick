@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,14 @@ namespace CRMPick
     /// </summary>
     public partial class QuanLiangXinZeng : Window
     {
+        [DllImport("KERNEL32.DLL", EntryPoint = "SetProcessWorkingSetSize", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern bool SetProcessWorkingSetSize(IntPtr pProcess, int dwMinimumWorkingSetSize, int dwMaximumWorkingSetSize);
+
+        [DllImport("KERNEL32.DLL", EntryPoint = "GetCurrentProcess", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        internal static extern IntPtr GetCurrentProcess();
+
+
+
         private bool CanOperation = false;//可以操作
         private int startss = 10000;//开始间隔毫秒
         private int endss = 20000;//结束间隔毫秒
@@ -34,7 +43,7 @@ namespace CRMPick
         private IHTMLWindow2 win;
         private string resource;//正在搜索的资源
         private UserClass user;
-        private string hint = "将客户资源复制到文本框中，点击开始采集，程序将采集到的信息保存到指定的Excel中";
+        private string hint = "将客户资源复制到文本框中，点击开始查询";
         private int codeerr = 0;//验证码错误次数
         private bool clockstop = false;//定时关闭 true：停止 false：继续
         public QuanLiangXinZeng()
@@ -44,9 +53,9 @@ namespace CRMPick
             deleteCookies.SuppressWininetBehavior();
             
             this.user = user;
-            xianzhi.Content = "*最多输入" + user.gatherresourcecount + "条资源!";
             this.ContentRendered += MLoad;
-            this.webBrower.ObjectForScripting = new ChaXunScriptEvent(this);
+            this.webBrower.ObjectForScripting = new QuanLiangScriptEvent(this);
+            WebUtils.SuppressScriptErrors(this.webBrower, true);
         }
 
 
@@ -56,8 +65,101 @@ namespace CRMPick
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
 
         }
+        private void TbLostF(object sender, RoutedEventArgs e)
+        {
+            if (tbresouses.Text.Trim().Equals(""))
+            {
+                tbresouses.Text = hint;
+            }
+        }
 
+        private void TbGotF(object sender, RoutedEventArgs e)
+        {
+            if (tbresouses.Text.Trim().Equals(hint))
+            {
+                tbresouses.Text = "";
+            }
 
+        }
+        /// <summary>
+        /// 开始查询按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            clockstop = false;
+
+            //获取间隔时间
+            if (starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
+            {
+                MessageBox.Show("请输入最小秒数");
+                return;
+            }
+            else if (!starts.Text.Trim().Equals("") && ends.Text.Trim().Equals(""))
+            {
+                MessageBox.Show("请输入最大秒数");
+                return;
+            }
+            else if (!starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
+            {
+                startss = int.Parse(starts.Text) * 1000;
+                endss = int.Parse(ends.Text) * 1000;
+            }
+
+           
+            //开始查询
+            if (CanOperation)
+            {
+                    string tbresousess = tbresouses.Text.Trim();
+                    if (tbresousess.Equals("") || tbresousess.Equals(hint))
+                    {
+                        MessageBox.Show("没有资源了");
+                    }
+                    else
+                    {
+                        reshUi(0);
+                        InquireCompany();
+                    }
+               
+            }
+            else
+            {
+                MessageBox.Show("页面不正确，无法进行操作");
+            }
+        }
+
+        /// <summary>
+        /// 暂停
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Pause_Click(object sender, RoutedEventArgs e)
+        {
+            clockstop = true;
+            MessageBox.Show("暂停");
+            Thread thr = new Thread(() =>
+            {
+                //这里还可以处理些比较耗时的事情。
+                Thread.Sleep(2000);//延时2秒
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    pauseReshUi();
+                }));
+            });
+            thr.Start();
+        }
+
+        /// <summary>
+        /// 暂停调整ui
+        /// </summary>
+        private void pauseReshUi()
+        {
+            startBtn.Content = "继续查询";
+            startBtn.IsEnabled = true;
+            startBtn.Visibility = Visibility.Visible;
+            pauseBtn.Visibility = Visibility.Collapsed;
+        }
         /// <summary>
         /// 网页加载完毕监听
         /// </summary>
@@ -114,25 +216,7 @@ namespace CRMPick
             }
         }
 
-        /// <summary>
-        /// js调用C#类
-        /// </summary>
-        [System.Runtime.InteropServices.ComVisible(true)]
-        public class ChaXunScriptEvent
-        {
-            private QuanLiangXinZeng quanLiang;
-
-            public ChaXunScriptEvent(QuanLiangXinZeng quanLiang)
-            {
-                this.quanLiang = quanLiang;
-            }
-
-            //供JS调用
-            public void CsharpVoid(int tag, string json)
-            {
-                quanLiang.AnalyzeCompanyThead(tag, json);
-            }
-        }
+        
 
         /// <summary>
         ///搜索结束、 解析json，分析公司资源状态
@@ -341,6 +425,15 @@ namespace CRMPick
         /// </summary>
         private void InquireCompany()
         {
+            try
+            {
+                IntPtr pHandle = GetCurrentProcess();
+                SetProcessWorkingSetSize(pHandle, -1, -1);
+            }
+            catch
+            {
+
+            }
             string company = getNextCompanyName();
             if (company.Equals(""))
             {
@@ -444,6 +537,26 @@ namespace CRMPick
                 t.Start(json);//用来给函数传递参数，开启线程
             }
 
+        }
+    }
+
+    /// <summary>
+    /// js调用C#类
+    /// </summary>
+    [System.Runtime.InteropServices.ComVisible(true)]
+    public class QuanLiangScriptEvent
+    {
+        private QuanLiangXinZeng quanLiang;
+
+        public QuanLiangScriptEvent(QuanLiangXinZeng quanLiang)
+        {
+            this.quanLiang = quanLiang;
+        }
+
+        //供JS调用
+        public void CsharpVoid(int tag, string json)
+        {
+            quanLiang.AnalyzeCompanyThead(tag, json);
         }
     }
 }
