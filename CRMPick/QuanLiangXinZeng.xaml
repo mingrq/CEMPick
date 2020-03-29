@@ -10,7 +10,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="500"/>
         </Grid.ColumnDefinitions>
         <WebBrowser x:Name="webBrower"  Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"></WebBrowser>
         <Rectangle Grid.Column="1" Width="2" Fill="#DBDBDB"/>
@@ -26,11 +26,11 @@
             <Button Content="选择Excel" Grid.Row="0" Width="100" Height="30" Margin="0,10,0,0" Click="Button_Click_1"/>
             <Label Grid.Row="1" FontSize="14" FontWeight="Bold" Padding="0" Content="客户资源:" Margin="20,20,0,0"/>
             <Label Grid.Row="2" FontSize="12" Padding="0" Foreground="Red" x:Name="xianzhi" Margin="20,0,0,0"/>
-            <ListView x:Name="list" Margin="10"  Grid.Row="3" Width="340">
+            <ListView x:Name="list" Margin="10"  Grid.Row="3" Width="480">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="240" Header="资源" DisplayMemberBinding="{Binding Path=resource}"/>
-                        <GridViewColumn Width="98"  Header="联系人" DisplayMemberBinding="{Binding Path=callname}"/>
+                        <GridViewColumn Width="370" Header="资源" DisplayMemberBinding="{Binding Path=resource}"/>
+                        <GridViewColumn Width="110"  Header="联系人" DisplayMemberBinding="{Binding Path=callname}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
@@ -46,7 +46,7 @@
                     <Button x:Name="pauseBtn" Margin="80,0,0,0" Width="70" HorizontalAlignment="Left" Height="30" Content="暂停查询" Click="Button_Pause_Click" Visibility="Collapsed"/>
                 </Canvas>
             </StackPanel>
-            <WebBrowser Grid.Row="5" Margin="0,50,0,0" Width="300" Height="300" x:Name="quanliangWebBrowser"/>
+            <WebBrowser Grid.Row="5" Margin="0,50,0,0" Width="480" Height="300" x:Name="quanliangWebBrowser" />
         </Grid>
         
     </Grid>

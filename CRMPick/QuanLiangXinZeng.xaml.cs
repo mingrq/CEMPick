@@ -34,6 +34,8 @@ namespace CRMPick
         [DllImport("KERNEL32.DLL", EntryPoint = "GetCurrentProcess", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
         internal static extern IntPtr GetCurrentProcess();
 
+        [DllImport("kernel32.dll")]
+        private static extern int Beep(int dwFreq, int dwDuration);
 
         private List<ResourcesClass> resources = null;
         private ResourcesClass resh_resource = null;
@@ -90,13 +92,10 @@ namespace CRMPick
                 {
                     pickwin.execScript("$('#contactor').val('"+resh_resource.callname +"')", "javascript");
                     pickwin.execScript("$('#companyName').val('" + resh_resource.resource + "')", "javascript");
-                }));
-                this.Dispatcher.Invoke(new Action(() =>
-                {
                     pickwin.execScript("$('button')[0].click()", "javascript");
                 }));
-                // Thread.Sleep(5000);//延时10秒
-                //InquireCompany();
+                Thread.Sleep(5000);//延时10秒
+                InquireCompany();
             });
             thr.Start();
         }
@@ -340,7 +339,10 @@ namespace CRMPick
                             this.Dispatcher.BeginInvoke((Action)(delegate ()
                             {
                                 //有信息
-                                this.quanliangWebBrowser.Source = new Uri("https://go.alibaba-inc.com/cbu_crm_open");
+                                int a = 0X7FF;
+                                int b = 1000;
+                                Beep(a, b);
+                                //this.quanliangWebBrowser.Source = new Uri("https://go.alibaba-inc.com/cbu_crm_open");
                             }));
                           
                         }
@@ -362,7 +364,6 @@ namespace CRMPick
                 }
                 MessageBox.Show("提示:数据格式错误，请联系研发部！！");
             }
-
 
         }
 
