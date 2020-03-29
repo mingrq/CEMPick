@@ -336,6 +336,7 @@ namespace CRMPick
                         }
                         else
                         {
+
                             this.Dispatcher.BeginInvoke((Action)(delegate ()
                             {
                                 //有信息
