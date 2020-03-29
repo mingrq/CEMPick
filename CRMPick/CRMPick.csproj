@@ -146,6 +146,7 @@
     <Compile Include="Utils\SelectFolder.cs" />
     <Compile Include="Utils\TimeSpanPicker.cs" />
     <Compile Include="Utils\UUIDClass.cs" />
+    <Compile Include="Utils\WebUtils.cs" />
     <Page Include="AddUserWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

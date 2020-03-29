@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -70,8 +71,10 @@ namespace CRMPick
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
             this.pickWebBrowser.LoadCompleted += new LoadCompletedEventHandler(Pickwebbrowser_LoadCompleted);
+            WebUtils.SuppressScriptErrors(this.webBrower, true);
+            WebUtils.SuppressScriptErrors(this.pickWebBrowser, true);
         }
-
+       
 
         private void TbLostF(object sender, RoutedEventArgs e)
         {
@@ -98,10 +101,11 @@ namespace CRMPick
         private string getNextCompanyName()
         {
             string firstcompany = "";
-            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").Replace("\r\r", "\r").TrimEnd('\r');
+            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").TrimEnd('\r');
             if (!tbresousess.Equals(hint))
             {
                 string[] companys = tbresousess.Split('\r');
+                companys = companys.Where(s => !string.IsNullOrEmpty(s)).ToArray();
                 firstcompany = companys[0].Trim();//要查询的公司资源
                 /*将第一条资源删除*/
                 List<string> companylist = companys.ToList();
@@ -110,6 +114,27 @@ namespace CRMPick
             }
             resource = firstcompany;
             return firstcompany;
+        }
+
+        /**
+         * 添加资源
+         */
+        public void addresource(string resource)
+        {
+            //将仓库中的资源添加到搜索列表中
+            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").TrimEnd('\r');
+            if (!tbresousess.Equals(hint))
+            {
+                string[] companys = tbresousess.Split('\r');
+                companys = companys.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                List<string> companylist = companys.ToList();
+                companylist.Add(resource);
+                tbresouses.Text = string.Join("\r", companylist.ToArray());
+            }
+            else
+            {
+                tbresouses.Text = resource;
+            }
         }
 
         /// <summary>
@@ -463,6 +488,17 @@ namespace CRMPick
                     {
                         //没有查询到符合条件的客户
                         resourceRecord(resource, null, 0);
+                    }else if (customer.allCustomerLeadList.Count>0)
+                    {
+                        //待分发
+                        if (XunHuanTiaoRuc)
+                        {
+                            this.Dispatcher.BeginInvoke((Action)(delegate ()
+                            {
+                                addresource(resource);
+                            }));
+                            Inquire();
+                        }
                     }
                     else
                     {
@@ -478,9 +514,16 @@ namespace CRMPick
                                 //2、判断是否有在库中的资源,有在仓库的直接记录后开始下一条资源查询
                                 if (item.productType.Equals("1") && item.depotOrSea.Equals("depot"))
                                 {
-                                    resourceRecord(resource, item, 3);
                                     SeaCustomerOpportunityList = null;
                                     resourceNameDifferentCount = 0;
+                                    if (XunHuanTiaoRuc)
+                                    {
+                                        this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                        {
+                                            addresource(resource);
+                                        }));
+                                    }
+                                    Inquire();
                                     return;
                                 }
                                 else
@@ -581,19 +624,7 @@ namespace CRMPick
                     {
                         this.Dispatcher.BeginInvoke((Action)(delegate ()
                         {
-                            //将仓库中的资源添加到搜索列表中
-                            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").TrimEnd('\r');
-                            if (!tbresousess.Equals(hint))
-                            {
-                                string[] companys = tbresousess.Split('\r');
-                                List<string> companylist = companys.ToList();
-                                companylist.Add(resource);
-                                tbresouses.Text = string.Join("\r", companylist.ToArray());
-                            }
-                            else
-                            {
-                                tbresouses.Text = resource;
-                            }
+                            addresource(resource);
                         }));
                     }
                     else
@@ -646,6 +677,8 @@ namespace CRMPick
                 }
             }));
         }
+
+        
 
 
 

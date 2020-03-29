@@ -108,12 +108,12 @@ namespace CRMPick
                         catch(Exception exc)
                         {
                             Console.WriteLine(exc.Message);
-                            MessageBox.Show("服务器连接失败");
+                            MessageBox.Show("网络连接失败");
                         }
                     },
                     fail =>
                     {
-                        MessageBox.Show("服务器连接失败");
+                        MessageBox.Show("网络连接失败");
                     });
             }
         }

@@ -37,7 +37,7 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="360"/>
         </Grid.ColumnDefinitions>
-        <WebBrowser x:Name="webBrower"  Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"></WebBrowser>
+        <WebBrowser x:Name="webBrower" Source="https://crm.alibaba-inc.com/noah/presale/work/allCustomer.vm"></WebBrowser>
         <Rectangle Grid.Column="1" Width="2" Fill="#DBDBDB"/>
         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Hidden">
             <Grid >
