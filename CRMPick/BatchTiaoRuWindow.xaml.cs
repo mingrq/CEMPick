@@ -506,8 +506,8 @@ namespace CRMPick
                             {
                                 addresource(resource);
                             }));
-                            Inquire();
                         }
+                        Inquire();
                     }
                     else
                     {
@@ -576,7 +576,7 @@ namespace CRMPick
                 sw.WriteLine(json + "\n" + e.ToString());
                 sw.Close();
                 fs.Close();
-                MessageBox.Show("提示:阿里数据格式改变，请联系研发部！！");
+                MessageBox.Show("提示:数据格式错误，请联系研发部！！");
             }
         }
 
