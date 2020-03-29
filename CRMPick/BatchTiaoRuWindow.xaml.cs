@@ -106,11 +106,15 @@ namespace CRMPick
             {
                 string[] companys = tbresousess.Split('\r');
                 companys = companys.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-                firstcompany = companys[0].Trim();//要查询的公司资源
-                /*将第一条资源删除*/
-                List<string> companylist = companys.ToList();
-                companylist.RemoveAt(0);
-                tbresouses.Text = string.Join("\r", companylist.ToArray());
+                if (companys.Length > 0)
+                {
+                    firstcompany = companys[0].Trim();//要查询的公司资源
+                                                      /*将第一条资源删除*/
+                    List<string> companylist = companys.ToList();
+                    companylist.RemoveAt(0);
+                    tbresouses.Text = string.Join("\r", companylist.ToArray());
+                }
+               
             }
             resource = firstcompany;
             return firstcompany;
@@ -252,6 +256,11 @@ namespace CRMPick
                 //页面加载完毕执行挑入
                 IHTMLDocument2 pickdoc = (IHTMLDocument2)pickWebBrowser.Document;
                 IHTMLWindow2 pickwin = (IHTMLWindow2)pickdoc.parentWindow;
+                mshtml.HTMLDocument htmlDoc = pickWebBrowser.Document as mshtml.HTMLDocument;
+                var head = htmlDoc.getElementsByTagName("head").Cast<HTMLHeadElement>().First();
+                var script = (IHTMLScriptElement)htmlDoc.createElement("script");
+                script.src = "https://demo.22com.cn/crm/json2.js";
+                head.appendChild((IHTMLDOMNode)script);
                 InjectJs inject = new InjectJs(this.pickWebBrowser);
                 Thread thr = new Thread(() =>
                 {
@@ -699,56 +708,11 @@ namespace CRMPick
         ////    13:挑入失败,请检查库容或者机会是否正常后再试
         ////    14:分发目标的库容已满
         /// </param>
-        public void DoPick(int tag)
+        public void DoPick(string json)
         {
+            Console.WriteLine(json);
             Thread thr = new Thread(() =>
-            {
-                string result = "";
-                //这里还可以处理些比较耗时的事情。
-                switch (tag)
-                {
-                    case 4://已达到仓库上限或者没有设置仓库上限
-                    case 5://已达到挑入上限,不能挑入
-                        this.Dispatcher.Invoke(new Action(() =>
-                        {
-                            reshUi(1);
-                            MessageBox.Show("已达到挑入上限!");
-                        }));
-                        return;
-                    case 0://挑入成功
-                        result = "挑入成功";
-                        break;
-                    case 1://挑入的公司名重复，不可挑
-                        result = "挑入的公司名重复，不可挑";
-                        break;
-                    case 2://选择挑入机会
-                        result = "选择挑入机会";
-                        break;
-                    case 3://源介绍客户Id不能为空且必须在你名下
-                        result = "源介绍客户Id不能为空且必须在你名下";
-                        break;
-                    case 6://该组中没有可用的sales
-                        result = "该组中没有可用的sales";
-                        break;
-                    case 7://挑入失败的机会
-                        result = "挑入失败的机会";
-                        break;
-                    case 8://提交成功，系统后台正在转移客户
-                        result = "提交成功，系统后台正在转移客户";
-                        break;
-                    case 9://挑入失败，没有目标销售
-                        result = "挑入失败，没有目标销售";
-                        break;
-                    case 12://挑入机会不能为空，请检查机会是否正常后再试
-                        result = "挑入机会不能为空，请检查机会是否正常后再试";
-                        break;
-                    case 13://挑入失败,请检查库容或者机会是否正常后再试
-                        result = "挑入失败,请检查库容或者机会是否正常后再试";
-                        break;
-                    case 14://分发目标的库容已满
-                        result = "分发目标的库容已满";
-                        break;
-                }
+            {   
                 Inquire();
             });
             thr.Start();
@@ -911,9 +875,9 @@ namespace CRMPick
         /// 挑入结果
         /// </summary>
         /// <param name="tag"></param>
-        public void DoPick(int tag)
+        public void DoPick(string json)
         {
-            batchTiaoRuWindow.DoPick(tag);
+            batchTiaoRuWindow.DoPick(json);
         }
     }
 }
