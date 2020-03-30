@@ -4,10 +4,8 @@ using mshtml;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,17 +26,6 @@ namespace CRMPick
     /// </summary>
     public partial class QuanLiangXinZeng : Window
     {
-        [DllImport("KERNEL32.DLL", EntryPoint = "SetProcessWorkingSetSize", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        internal static extern bool SetProcessWorkingSetSize(IntPtr pProcess, int dwMinimumWorkingSetSize, int dwMaximumWorkingSetSize);
-
-        [DllImport("KERNEL32.DLL", EntryPoint = "GetCurrentProcess", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        internal static extern IntPtr GetCurrentProcess();
-
-        [DllImport("kernel32.dll")]
-        private static extern int Beep(int dwFreq, int dwDuration);
-
-        private List<ResourcesClass> resources = null;
-        private ResourcesClass resh_resource = null;
         private bool CanOperation = false;//可以操作
         private int startss = 10000;//开始间隔毫秒
         private int endss = 20000;//结束间隔毫秒
@@ -47,7 +34,7 @@ namespace CRMPick
         private IHTMLWindow2 win;
         private string resource;//正在搜索的资源
         private UserClass user;
-        private string hint = "将客户资源复制到文本框中，点击开始查询";
+        private string hint = "将客户资源复制到文本框中，点击开始采集，程序将采集到的信息保存到指定的Excel中";
         private int codeerr = 0;//验证码错误次数
         private bool clockstop = false;//定时关闭 true：停止 false：继续
         public QuanLiangXinZeng()
@@ -55,11 +42,11 @@ namespace CRMPick
             InitializeComponent();
             DeleteCookies deleteCookies = new DeleteCookies();
             deleteCookies.SuppressWininetBehavior();
-
+            
             this.user = user;
+            xianzhi.Content = "*最多输入" + user.gatherresourcecount + "条资源!";
             this.ContentRendered += MLoad;
-            this.webBrower.ObjectForScripting = new QuanLiangScriptEvent(this);
-
+            this.webBrower.ObjectForScripting = new ChaXunScriptEvent(this);
         }
 
 
@@ -67,121 +54,10 @@ namespace CRMPick
         {
             this.Topmost = false;
             this.webBrower.LoadCompleted += new LoadCompletedEventHandler(webbrowser_LoadCompleted);
-            this.quanliangWebBrowser.LoadCompleted += new LoadCompletedEventHandler(QuanLiangWebbrowser_LoadCompleted);
-            WebUtils.SuppressScriptErrors(this.webBrower, true);
-            WebUtils.SuppressScriptErrors(this.quanliangWebBrowser, true);
+
         }
 
 
-        /// <summary>
-        /// 全量网页加载完毕监听
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void QuanLiangWebbrowser_LoadCompleted(object sender, NavigationEventArgs e)
-        {
-
-            //页面加载完毕执行挑入
-            IHTMLDocument2 pickdoc = (IHTMLDocument2)quanliangWebBrowser.Document;
-            IHTMLWindow2 pickwin = (IHTMLWindow2)pickdoc.parentWindow;
-            Thread thr = new Thread(() =>
-            {
-                //这里还可以处理些比较耗时的事情。
-                Thread.Sleep(3000);//延时10秒
-                this.Dispatcher.Invoke(new Action(() =>
-                {
-                    pickwin.execScript("$('#contactor').val('"+resh_resource.callname +"')", "javascript");
-                    pickwin.execScript("$('#companyName').val('" + resh_resource.resource + "')", "javascript");
-                    pickwin.execScript("$('button')[0].click()", "javascript");
-                }));
-                Thread.Sleep(5000);//延时10秒
-                InquireCompany();
-            });
-            thr.Start();
-        }
-        /// <summary>
-        /// 开始查询按钮
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            clockstop = false;
-
-            //获取间隔时间
-            if (starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
-            {
-                MessageBox.Show("请输入最小秒数");
-                return;
-            }
-            else if (!starts.Text.Trim().Equals("") && ends.Text.Trim().Equals(""))
-            {
-                MessageBox.Show("请输入最大秒数");
-                return;
-            }
-            else if (!starts.Text.Trim().Equals("") && !ends.Text.Trim().Equals(""))
-            {
-                startss = int.Parse(starts.Text) * 1000;
-                endss = int.Parse(ends.Text) * 1000;
-            }
-
-
-            //开始查询
-            if (CanOperation)
-            {
-                reshUi(0);
-                string company = getNextCompanyName();
-                if (company.Equals(""))
-                {
-                    //查询结束
-                    reshUi(1);
-
-                }
-                else
-                {
-                    //查询
-                    searchjs(company);
-                }
-            }
-            else
-            {
-                MessageBox.Show("页面不正确，无法进行操作");
-            }
-        }
-
-
-
-        /// <summary>
-        /// 暂停
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Button_Pause_Click(object sender, RoutedEventArgs e)
-        {
-            clockstop = true;
-            MessageBox.Show("暂停");
-            Thread thr = new Thread(() =>
-            {
-                //这里还可以处理些比较耗时的事情。
-                Thread.Sleep(2000);//延时2秒
-                this.Dispatcher.Invoke(new Action(() =>
-                {
-                    pauseReshUi();
-                }));
-            });
-            thr.Start();
-        }
-
-        /// <summary>
-        /// 暂停调整ui
-        /// </summary>
-        private void pauseReshUi()
-        {
-            startBtn.Content = "继续查询";
-            startBtn.IsEnabled = true;
-            startBtn.Visibility = Visibility.Visible;
-            pauseBtn.Visibility = Visibility.Collapsed;
-        }
         /// <summary>
         /// 网页加载完毕监听
         /// </summary>
@@ -238,7 +114,25 @@ namespace CRMPick
             }
         }
 
+        /// <summary>
+        /// js调用C#类
+        /// </summary>
+        [System.Runtime.InteropServices.ComVisible(true)]
+        public class ChaXunScriptEvent
+        {
+            private QuanLiangXinZeng quanLiang;
 
+            public ChaXunScriptEvent(QuanLiangXinZeng quanLiang)
+            {
+                this.quanLiang = quanLiang;
+            }
+
+            //供JS调用
+            public void CsharpVoid(int tag, string json)
+            {
+                quanLiang.AnalyzeCompanyThead(tag, json);
+            }
+        }
 
         /// <summary>
         ///搜索结束、 解析json，分析公司资源状态
@@ -291,8 +185,8 @@ namespace CRMPick
                     List<AllCustomerOpportunityListItem> AllCustomerOpportunityList = customer.allCustomerOpportunityList;
                     if (AllCustomerOpportunityList.Count == 0)
                     {
-                        addResource();
-                        InquireCompany();//循环
+                        //没有查询到符合条件的客户
+                        resourceRecord(resource, null, 0);
                     }
                     else
                     {
@@ -331,21 +225,12 @@ namespace CRMPick
                         if (resourceNameDifferentCount == AllCustomerOpportunityList.Count)
                         {
                             //4、所有资源名称都不正确
-                            addResource();
-                            InquireCompany();//循环
+                            resourceRecord(resource, null, 1);
                         }
                         else
                         {
-
-                            this.Dispatcher.BeginInvoke((Action)(delegate ()
-                            {
-                                //有信息
-                                int a = 0X7FF;
-                                int b = 1000;
-                                Beep(a, b);
-                                //this.quanliangWebBrowser.Source = new Uri("https://go.alibaba-inc.com/cbu_crm_open");
-                            }));
-                          
+                            //3、所有资源都在公海，将信息记录
+                            resourceRecord(resource, SeaCustomerOpportunityList[0], 2);
                         }
                         resourceNameDifferentCount = 0;
                         SeaCustomerOpportunityList = null;
@@ -354,17 +239,17 @@ namespace CRMPick
             }
             catch (Exception e)
             {
-                string errorSaveFiler = Directory.GetCurrentDirectory() + "\\errorlog.txt";//用户账号保存文件
-                try
-                {
-                    File.AppendAllText(errorSaveFiler, "\r\n" + DateTime.Now.ToString() + "      " + e.ToString());
-                }
-                catch
-                {
+                string errorFiler = Directory.GetCurrentDirectory() + "\\errorlog.txt";//用户账号保存文件
 
-                }
-                MessageBox.Show("提示:数据格式错误，请联系研发部！！");
+                FileStream fs = new FileStream(errorFiler, FileMode.OpenOrCreate);
+                StreamWriter sw = new StreamWriter(fs);
+
+                sw.WriteLine(json + "\n" + e.ToString());
+                sw.Close();
+                fs.Close();
+                MessageBox.Show("提示:阿里数据格式改变，请联系研发部！！");
             }
+
 
         }
 
@@ -438,7 +323,16 @@ namespace CRMPick
             saler = null;
             time = null;
             organization = null;
-            InquireCompany();//循环
+            Thread.Sleep(RandomTime());//延时
+
+            this.Dispatcher.BeginInvoke((Action)(delegate ()
+            {
+                //要执行的方法
+                if (!clockstop)
+                {
+                    InquireCompany();//循环
+                }
+            }));
 
         }
 
@@ -447,37 +341,19 @@ namespace CRMPick
         /// </summary>
         private void InquireCompany()
         {
-            try
+            string company = getNextCompanyName();
+            if (company.Equals(""))
             {
-                IntPtr pHandle = GetCurrentProcess();
-                SetProcessWorkingSetSize(pHandle, -1, -1);
+                //查询结束
+                reshUi(1);
+                tbresouses.Text = hint;
+                MessageBox.Show("没有资源了，查询结束！！");
             }
-            catch
+            else
             {
-
+                //查询
+                searchjs(company);
             }
-            Thread.Sleep(RandomTime());//延时
-
-            this.Dispatcher.BeginInvoke((Action)(delegate ()
-            {
-                //要执行的方法
-                if (!clockstop)
-                {
-                    string company = getNextCompanyName();
-                    if (company.Equals(""))
-                    {
-                        //查询结束
-                        reshUi(1);
-
-                    }
-                    else
-                    {
-                        //查询
-                        searchjs(company);
-                    }
-                }
-            }));
-
 
         }
         /// <summary>
@@ -499,36 +375,20 @@ namespace CRMPick
         private string getNextCompanyName()
         {
             string firstcompany = "";
-            if (resources.Count > 0)
+            string tbresousess = tbresouses.Text.Replace("\r\n", "\r").Replace("\n", "\r").TrimEnd('\r');
+            if (!tbresousess.Equals(hint))
             {
-                resh_resource = resources[0];
-                resources.RemoveAt(0);
-                this.Dispatcher.BeginInvoke((Action)(delegate ()
-                {
-                    list.ItemsSource = null;
-                    list.ItemsSource = resources;
-                }));
-                firstcompany = resh_resource.resource;
+                string[] companys = tbresousess.Split('\r');
+                firstcompany = companys[0].Trim();//要查询的公司资源
+                /*将第一条资源删除*/
+                List<string> companylist = companys.ToList();
+                companylist.RemoveAt(0);
+                tbresouses.Text = string.Join("\r", companylist.ToArray());
+
             }
             resource = firstcompany;
             return firstcompany;
         }
-
-        /// <summary>
-        /// 添加资源
-        /// </summary>
-        private void addResource()
-        {
-            resources.Add(resh_resource);
-            this.Dispatcher.BeginInvoke((Action)(delegate ()
-            {
-                list.ItemsSource = null;
-                list.ItemsSource = resources;
-            }));
-        }
-
-
-
         /// <summary>
         /// 随机延时数
         /// </summary>
@@ -585,55 +445,5 @@ namespace CRMPick
             }
 
         }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            //读取数据至datatable
-            var dt = Tools.ImportExcelFile();
-            if (dt == null) return;
-
-            resources = new List<ResourcesClass>();
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                var row = dt.Rows[i];
-                ResourcesClass resourcesClass = new ResourcesClass();
-                resourcesClass.resource = row[0].ToString();
-                resourcesClass.callname = row[1].ToString();
-                resources.Add(resourcesClass);
-            }
-            list.ItemsSource = resources;
-        }
-
-
-    }
-
-    /// <summary>
-    /// js调用C#类
-    /// </summary>
-    [System.Runtime.InteropServices.ComVisible(true)]
-    public class QuanLiangScriptEvent
-    {
-        private QuanLiangXinZeng quanLiang;
-
-        public QuanLiangScriptEvent(QuanLiangXinZeng quanLiang)
-        {
-            this.quanLiang = quanLiang;
-        }
-
-        //供JS调用
-        public void CsharpVoid(int tag, string json)
-        {
-            quanLiang.AnalyzeCompanyThead(tag, json);
-        }
-    }
-
-
-    class ResourcesClass
-    {
-        public string resource { get; set; }
-        /// <summary>
-        /// 密码修改成功
-        /// </summary>
-        public string callname { get; set; }
     }
 }
