@@ -118,11 +118,15 @@ namespace CRMPick
             if (!tbresousess.Equals(hint))
             {
                 string[] companys = tbresousess.Split('\r');
-                firstcompany = companys[0].Trim();//要查询的公司资源
-                /*将第一条资源删除*/
-                List<string> companylist = companys.ToList();
-                companylist.RemoveAt(0);
-                tbresouses.Text = string.Join("\r", companylist.ToArray());
+                companys = companys.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                if (companys.Length > 0)
+                {
+                    firstcompany = companys[0].Trim();//要查询的公司资源
+                                                      /*将第一条资源删除*/
+                    List<string> companylist = companys.ToList();
+                    companylist.RemoveAt(0);
+                    tbresouses.Text = string.Join("\r", companylist.ToArray());
+                }
 
             }
             resource = firstcompany;
@@ -135,6 +139,7 @@ namespace CRMPick
         /// </summary>
         private void InquireCompany()
         {
+           
             string company = getNextCompanyName();
             if (company.Equals(""))
             {

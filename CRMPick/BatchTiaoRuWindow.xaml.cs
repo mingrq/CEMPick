@@ -146,18 +146,33 @@ namespace CRMPick
         /// </summary>
         private void InquireCompany()
         {
-            string company = getNextCompanyName();
-            if (company.Equals(""))
+            try
             {
-                //查询结束
-                reshUi(1);
-                tbresouses.Text = hint;
-            }
-            else
+                string company = getNextCompanyName();
+                if (company.Equals(""))
+                {
+                    //查询结束
+                    reshUi(1);
+                    tbresouses.Text = hint;
+                }
+                else
+                {
+                    //查询
+                    searchjs(company);
+                }
+            }catch(Exception we)
             {
-                //查询
-                searchjs(company);
+                string errorSaveFiler = Directory.GetCurrentDirectory() + "\\errorlog.txt";//用户账号保存文件
+                try
+                {
+                    File.AppendAllText(errorSaveFiler, "\r\n" + DateTime.Now.ToString() + "      " + we.ToString());
+                }
+                catch
+                {
+
+                }
             }
+          
 
         }
 
