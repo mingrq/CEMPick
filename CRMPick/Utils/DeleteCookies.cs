@@ -13,6 +13,8 @@ namespace CRMPick.Utils
 
         [DllImport("wininet.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
         public static extern bool InternetSetOption(int hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);
+        [DllImport("wininet.dll", SetLastError = true)]
+        private static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int lpdwBufferLength);
         public unsafe void SuppressWininetBehavior()
         {
             /* SOURCE: http://msdn.microsoft.com/en-us/library/windows/desktop/aa385328%28v=vs.85%29.aspx
@@ -28,9 +30,26 @@ namespace CRMPick.Utils
             int option = (int)3/* INTERNET_SUPPRESS_COOKIE_PERSIST*/;
             int* optionPtr = &option;
             bool success = InternetSetOption(0, 81/*INTERNET_OPTION_SUPPRESS_BEHAVIOR*/, new IntPtr(optionPtr), sizeof(int));
-            if (!success)
+            ResetCookie();
+            //Session的选项ID为42
+            InternetSetOption(IntPtr.Zero, 42, IntPtr.Zero, 0);
+        }
+        
+      
+        //清空cookie
+        public void ResetCookie()
+        {
+          
+            string[] theCookies = System.IO.Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.Cookies));
+            foreach (string currentFile in theCookies)
             {
-                MessageBox.Show("Something went wrong !>?");
+                try
+                {
+                    System.IO.File.Delete(currentFile);
+                }
+                catch (Exception ex)
+                {
+                }
             }
         }
     }
