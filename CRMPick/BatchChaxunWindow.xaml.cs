@@ -373,8 +373,12 @@ namespace CRMPick
             if (tag == 0)
             {
                 //搜索失败
-                MessageBox.Show("连接服务器失败！");
-                reshUi(0);
+                //MessageBox.Show("连接服务器失败！");
+                //reshUi(0);
+                if (!clockstop)
+                {
+                    InquireCompany();//循环
+                }
             }
             else
             {

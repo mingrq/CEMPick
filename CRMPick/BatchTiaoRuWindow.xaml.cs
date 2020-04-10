@@ -448,8 +448,16 @@ namespace CRMPick
             if (tag == 0)
             {
                 //搜索失败
-                MessageBox.Show("连接服务器失败！");
-                reshUi(0);
+                //MessageBox.Show("连接服务器失败！");
+                //reshUi(0);
+                if (XunHuanTiaoRuc)
+                {
+                    this.Dispatcher.BeginInvoke((Action)(delegate ()
+                    {
+                        addresource(resource);
+                    }));
+                }
+                Inquire();
             }
             else
             {
