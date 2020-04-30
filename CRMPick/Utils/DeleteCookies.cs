@@ -35,6 +35,7 @@ namespace CRMPick.Utils
             InternetSetOption(IntPtr.Zero, 42, IntPtr.Zero, 0);
         }
         
+
       
         //清空cookie
         public void ResetCookie()
