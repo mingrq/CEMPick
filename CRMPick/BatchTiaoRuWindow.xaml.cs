@@ -445,6 +445,7 @@ namespace CRMPick
         Thread t;
         public void AnalyzeCompanyThead(int tag, string json)
         {
+
             if (tag == 0)
             {
                 //搜索失败
